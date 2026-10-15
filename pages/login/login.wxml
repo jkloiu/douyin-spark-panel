@@ -1,0 +1,51 @@
+<view class="login stagger">
+  <view class="login__brand">
+    <view class="login__logo">🔥</view>
+    <view class="login__title">火花面板</view>
+    <view class="login__desc">抖音火花自动维护 · 小程序版</view>
+  </view>
+
+  <view class="card login__card">
+    <view class="field">
+      <text class="field__label">面板用户名</text>
+      <input
+        class="field__input"
+        value="{{username}}"
+        bindinput="onUser"
+        placeholder="如 polarstar"
+        placeholder-class="ph"
+      />
+    </view>
+
+    <view class="field">
+      <text class="field__label">密码</text>
+      <input
+        class="field__input"
+        password
+        value="{{password}}"
+        bindinput="onPass"
+        placeholder="面板登录密码"
+        placeholder-class="ph"
+        confirm-type="done"
+        bindconfirm="submit"
+      />
+    </view>
+
+    <view wx:if="{{err}}" class="login__err">{{err}}</view>
+
+    <button
+      class="btn btn--primary btn--block"
+      loading="{{loading}}"
+      disabled="{{loading}}"
+      bindtap="submit"
+    >
+      {{loading ? '登录中…' : '登录'}}
+    </button>
+  </view>
+
+  <view class="login__foot">
+    <text wx:if="{{envOk === true}}" class="small muted">云环境连接正常</text>
+    <text wx:elif="{{envOk === false}}" class="small login__envfail">{{envMsg}}</text>
+    <text wx:else class="small muted">正在检查云环境…</text>
+  </view>
+</view>

@@ -1,0 +1,357 @@
+/* ── 微信服务通知 主卡片 ─────────────────────────────── */
+.hero {
+  background: var(--card);
+  border: 1rpx solid var(--line);
+  border-radius: var(--radius);
+  padding: 30rpx 28rpx;
+  margin-bottom: 24rpx;
+  box-shadow: var(--sh-1);
+  border-top: 6rpx solid var(--primary);
+}
+.hero__head {
+  display: flex;
+  align-items: center;
+}
+.hero__t {
+  font-size: 32rpx;
+  font-weight: 700;
+}
+.hero__tag {
+  margin-left: 14rpx;
+  font-size: 20rpx;
+  color: #fff;
+  background: var(--primary);
+  border-radius: 100rpx;
+  padding: 2rpx 14rpx;
+  flex: none;
+}
+.hero__sub {
+  font-size: 23rpx;
+  color: var(--txt3);
+  margin-top: 8rpx;
+}
+.hero__body {
+  margin-top: 20rpx;
+  background: var(--card-2);
+  border-radius: 14rpx;
+  padding: 8rpx 20rpx;
+}
+.krow {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 16rpx 0;
+  border-bottom: 1rpx solid var(--line);
+}
+.krow:last-child {
+  border-bottom: none;
+}
+.krow__k {
+  font-size: 25rpx;
+  color: var(--txt2);
+  flex: none;
+}
+.krow__v {
+  font-size: 26rpx;
+  text-align: right;
+  margin-left: 20rpx;
+  word-break: break-all;
+}
+.krow__v--ok {
+  color: var(--ok);
+  font-weight: 600;
+}
+.hero__tip {
+  font-size: 22rpx;
+  color: var(--txt3);
+  line-height: 1.7;
+  margin-top: 18rpx;
+}
+
+/* ── 当前推送方式（顶部一览） ───────────────────────── */
+.nowcard {
+  display: flex;
+  align-items: center;
+  background: var(--card);
+  border: 1rpx solid var(--line);
+  border-radius: var(--radius);
+  padding: 20rpx 24rpx;
+  margin-bottom: 20rpx;
+  box-shadow: var(--sh-1);
+}
+.nowcard__k {
+  font-size: 24rpx;
+  color: var(--txt3);
+  flex: none;
+}
+.nowcard__v {
+  font-size: 25rpx;
+  font-weight: 600;
+  color: var(--txt);
+  margin-left: 16rpx;
+  text-align: right;
+  flex: 1;
+  word-break: break-all;
+}
+
+/* ── 通道序号 ───────────────────────────────────────── */
+.hero__num {
+  flex: none;
+  width: 36rpx;
+  height: 36rpx;
+  line-height: 36rpx;
+  text-align: center;
+  border-radius: 50%;
+  background: var(--primary);
+  color: #fff;
+  font-size: 22rpx;
+  font-weight: 700;
+  margin-right: 14rpx;
+}
+.hero__num--sm {
+  display: inline-block;
+  width: 30rpx;
+  height: 30rpx;
+  line-height: 30rpx;
+  font-size: 19rpx;
+  background: var(--txt3);
+  margin-right: 10rpx;
+  vertical-align: middle;
+}
+
+/* ════════════════════════════════════════════════════════
+   第三方通道 · 列表（一行一条）
+   ════════════════════════════════════════════════════════ */
+.card__head {
+  margin-bottom: 4rpx;
+}
+.card__l {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+  flex: 1;
+}
+.card__sum {
+  font-size: 22rpx;
+  color: var(--txt3);
+  margin-top: 6rpx;
+}
+.head-r {
+  display: flex;
+  align-items: center;
+  gap: 10rpx;
+  flex: none;
+}
+/* 「＋ 增加」：卡片头右侧的常驻入口 */
+.addbtn {
+  font-size: 25rpx;
+  font-weight: 600;
+  color: var(--primary);
+  background: var(--primary-soft);
+  border-radius: var(--r-pill);
+  padding: 8rpx 22rpx;
+}
+
+.chempty {
+  font-size: 24rpx;
+  color: var(--txt3);
+  line-height: 1.7;
+  padding: 26rpx 4rpx 10rpx;
+  animation: fadeIn 0.3s var(--ease) backwards;
+}
+
+.chrow {
+  display: flex;
+  align-items: center;
+  padding: 22rpx 0;
+  border-top: 1rpx solid var(--line);
+}
+.chrow:first-of-type {
+  border-top: none;
+}
+/* 左侧渠道圆标：按渠道给一点颜色，扫一眼能区分 */
+.chrow__ic {
+  flex: none;
+  width: 68rpx;
+  height: 68rpx;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 30rpx;
+  font-weight: 700;
+  background: var(--bg2);
+  color: var(--txt2);
+}
+.chrow__ic--wxpusher {
+  background: var(--ok-soft);
+  color: var(--ok);
+}
+.chrow__ic--clawbot {
+  background: var(--accent-soft);
+  color: var(--accent);
+}
+.chrow__ic--wecom {
+  background: var(--info-soft);
+  color: var(--info);
+}
+.chrow__ic--serverchan {
+  background: var(--warn-soft);
+  color: var(--warn);
+}
+.chrow__ic--bark {
+  background: var(--primary-soft);
+  color: var(--primary);
+}
+.chrow__ic--generic {
+  background: var(--bg2);
+  color: var(--txt2);
+}
+.chrow__mid {
+  flex: 1;
+  min-width: 0;
+  margin-left: 20rpx;
+}
+.chrow__t {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 8rpx;
+}
+.chrow__name {
+  font-size: 28rpx;
+  font-weight: 600;
+  color: var(--txt);
+}
+.chrow__s {
+  font-size: 22rpx;
+  color: var(--txt3);
+  margin-top: 6rpx;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.chipx {
+  flex: none;
+  font-size: 20rpx;
+  line-height: 1.6;
+  padding: 0 12rpx;
+  border-radius: var(--r-xs);
+  background: var(--bg2);
+  color: var(--txt2);
+}
+.chipx--on {
+  background: var(--ok-soft);
+  color: var(--ok);
+}
+.chipx--off {
+  background: var(--bg2);
+  color: var(--txt3);
+}
+.chipx--daily {
+  background: var(--primary-soft);
+  color: var(--primary);
+}
+
+/* 展开箭头：CSS 画的 chevron（行尾） */
+.chev {
+  flex: none;
+  width: 16rpx;
+  height: 16rpx;
+  margin-left: 12rpx;
+  border-right: 3rpx solid var(--txt3);
+  border-bottom: 3rpx solid var(--txt3);
+  transform: rotate(-45deg);
+}
+
+/* ── 提示条 ─────────────────────────────────────────── */
+.notice {
+  font-size: 23rpx;
+  line-height: 1.6;
+  border-radius: 12rpx;
+  padding: 18rpx 20rpx;
+  margin-top: 18rpx;
+}
+.notice--warn {
+  background: var(--warn-soft);
+  color: var(--warn);
+}
+.notice--danger {
+  background: var(--danger-soft);
+  color: var(--danger);
+}
+
+/* ════════════════════════════════════════════════════════
+   弹窗：增加 / 编辑 / 删除
+   ════════════════════════════════════════════════════════ */
+.mask {
+  position: fixed;
+  left: 0;
+  right: 0;
+  top: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.62);
+  z-index: 900;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 40rpx;
+}
+.dialog {
+  width: 100%;
+  max-height: 86vh;
+  overflow-y: auto;
+  background: var(--card);
+  border: 1rpx solid var(--line);
+  border-radius: 24rpx;
+  padding: 36rpx 32rpx 28rpx;
+  box-shadow: var(--sh-3);
+}
+.dialog__title {
+  font-size: 32rpx;
+  font-weight: 700;
+  text-align: center;
+  margin-bottom: 28rpx;
+}
+.dialog__ops {
+  display: flex;
+  gap: 16rpx;
+  margin-top: 16rpx;
+}
+.dialog__ops .btn {
+  flex: 1;
+}
+.dialog__hint {
+  margin-top: 22rpx;
+  text-align: center;
+  font-size: 22rpx;
+  color: var(--txt3);
+}
+
+/* ── 表单（沿用原样式） ─────────────────────────────── */
+.switchrow {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 18rpx 0;
+}
+.switchrow__t {
+  font-size: 28rpx;
+}
+.ops {
+  display: flex;
+  gap: 16rpx;
+  margin-top: 16rpx;
+}
+.ops .btn {
+  flex: 1;
+}
+.errbox {
+  background: var(--danger-soft);
+  color: var(--danger);
+  font-size: 25rpx;
+  padding: 20rpx 24rpx;
+  border-radius: 12rpx;
+  margin-top: 24rpx;
+  line-height: 1.5;
+}

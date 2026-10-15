@@ -1,0 +1,4 @@
+# 依赖 / 本地私有配置
+node_modules/
+miniprogram_npm/
+*.log

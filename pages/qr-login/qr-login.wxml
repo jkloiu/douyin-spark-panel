@@ -1,0 +1,43 @@
+<view class="page stagger">
+  <view class="card">
+    <view class="card__head">
+      <text class="card__title">扫码登录</text>
+      <text class="card__sub mono">{{uid}}</text>
+    </view>
+
+    <view class="qrbox">
+      <image wx:if="{{qrSrc}}" class="qr" src="{{qrSrc}}" mode="aspectFit" show-menu-by-longpress />
+      <view wx:else class="qr qr--ph">
+        <view wx:if="{{err}}" class="qr__err">{{err}}</view>
+        <view wx:else class="qr__wait">{{msg || '二维码生成中…'}}</view>
+      </view>
+    </view>
+
+    <view class="statusbar">
+      <text class="badge {{status === 'success' ? 'badge--ok' : (status === 'error' || status === 'expired' ? 'badge--danger' : 'badge--primary')}}">
+        {{statusText}}
+      </text>
+    </view>
+
+    <view wx:if="{{needVerify}}" class="verify">
+      <view class="verify__hint">扫码已受理，抖音要求短信二次验证。请填写手机收到的验证码：</view>
+      <input class="verify__inp" type="number" maxlength="8" placeholder="请输入短信验证码"
+             value="{{code}}" bindinput="onCodeInput" disabled="{{submitting}}" />
+      <button class="btn btn--primary btn--block" bindtap="submitCode" loading="{{submitting}}">提交验证码</button>
+    </view>
+
+    <view class="steps">
+      <view class="step">1. 打开手机抖音 App，右上角「扫一扫」</view>
+      <view class="step">2. 扫描上方二维码并确认登录</view>
+      <view class="step">3. 页面会自动检测到登录成功</view>
+    </view>
+
+    <view wx:if="{{err}}" class="errbox">{{err}}</view>
+
+    <button class="btn btn--primary btn--block" bindtap="retry" loading="{{starting}}">重新获取二维码</button>
+  </view>
+
+  <view class="tipcard">
+    服务器 IP 有时会被抖音风控。如果一直加载不出二维码，或扫码后总被要求二次验证，改用「短信登录」或导入 cookie。
+  </view>
+</view>

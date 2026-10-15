@@ -1,0 +1,54 @@
+.statusline {
+  text-align: center;
+  margin: 8rpx 0 26rpx;
+}
+.msgbox {
+  background: var(--card-2);
+  border-radius: 12rpx;
+  padding: 20rpx 22rpx;
+  font-size: 25rpx;
+  color: var(--txt2);
+  line-height: 1.6;
+  margin-bottom: 26rpx;
+}
+.codeinput {
+  letter-spacing: 12rpx;
+  font-size: 36rpx;
+  text-align: center;
+}
+.relogin {
+  margin-top: 16rpx;
+}
+.errbox {
+  background: var(--danger-soft);
+  color: var(--danger);
+  font-size: 24rpx;
+  padding: 18rpx 22rpx;
+  border-radius: 12rpx;
+  margin-top: 24rpx;
+  line-height: 1.5;
+}
+/* 等待服务器就绪时的说明块
+   [20261007] 新增：登录页准备要 1~2 分钟，必须让用户明确知道「现在还不能输验证码」，
+   否则他会提前提交、被面板判为无效，看起来就像功能坏了。 */
+.waitbox {
+  background: var(--info-soft);
+  color: var(--txt2);
+  font-size: 23rpx;
+  line-height: 1.6;
+  border-radius: 14rpx;
+  padding: 22rpx 26rpx;
+  margin-bottom: 26rpx;
+}
+.waitbox__b {
+  color: var(--primary);
+  font-weight: 600;
+}
+.tipcard {
+  background: var(--warn-soft);
+  color: var(--warn);
+  font-size: 23rpx;
+  line-height: 1.6;
+  border-radius: 14rpx;
+  padding: 22rpx 26rpx;
+}

@@ -1,0 +1,142 @@
+.hintbox {
+  background: var(--card-2);
+  border-radius: 12rpx;
+  padding: 20rpx 22rpx;
+  font-size: 24rpx;
+  color: var(--txt2);
+  line-height: 1.6;
+  margin-bottom: 24rpx;
+}
+/* 第二条说明（归属口径）：弱化一点，别和主说明抢注意力 */
+.hintbox--own {
+  background: transparent;
+  border: 1rpx solid var(--line);
+  margin-top: -10rpx;
+  font-size: 22rpx;
+  color: var(--txt3);
+}
+.errbox {
+  background: var(--danger-soft);
+  color: var(--danger);
+  font-size: 25rpx;
+  padding: 20rpx 24rpx;
+  border-radius: 12rpx;
+  margin-bottom: 24rpx;
+}
+
+/* 账号卡：第一行「备注名 + 登录态」，第二行「抖音号 / cookie / 目标 / 归属」一组胶囊 */
+.acard__namerow {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+.acard__name {
+  font-size: 31rpx;
+  font-weight: 600;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  margin-right: 16rpx;
+}
+.acard__pills {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 12rpx;
+  margin-top: 14rpx;
+}
+.apid {
+  font-size: 22rpx;
+  line-height: 1.6;
+  color: var(--txt2);
+  background: var(--card-2);
+  border: 1rpx solid var(--line);
+  border-radius: 100rpx;
+  padding: 2rpx 16rpx;
+}
+.apid--own {
+  background: var(--primary-soft);
+  border-color: rgba(255, 122, 69, 0.28);
+  color: var(--primary);
+}
+.apid--unset {
+  background: var(--card-2);
+  border-color: var(--line);
+  color: var(--txt3);
+}
+.acard__desc {
+  margin-top: 14rpx;
+  font-size: 24rpx;
+  color: var(--txt2);
+  background: var(--card-2);
+  border-radius: 10rpx;
+  padding: 14rpx 18rpx;
+  line-height: 1.5;
+}
+.acard__ops {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 14rpx;
+  margin-top: 22rpx;
+}
+
+.mask {
+  position: fixed;
+  left: 0;
+  right: 0;
+  top: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.62);
+  z-index: 900;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 48rpx;
+}
+.dialog {
+  width: 100%;
+  background: var(--card);
+  border: 1rpx solid var(--line);
+  border-radius: 24rpx;
+  padding: 40rpx 32rpx 32rpx;
+}
+.dialog__title {
+  font-size: 32rpx;
+  font-weight: 700;
+  text-align: center;
+  margin-bottom: 32rpx;
+}
+.dialog__ops {
+  display: flex;
+  gap: 16rpx;
+  margin-top: 12rpx;
+}
+.dialog__ops .btn {
+  flex: 1;
+}
+
+/* [20261013] 导入 cookie 弹层：把目标抖音号显眼地摆在最上面，
+   免得粘了半天发现贴错了账号 */
+.imp__uid {
+  display: inline-block;
+  font-size: 23rpx;
+  color: var(--primary);
+  background: var(--primary-soft);
+  border: 1rpx solid rgba(255, 122, 69, 0.28);
+  border-radius: var(--r-pill);
+  padding: 6rpx 20rpx;
+  margin-bottom: 20rpx;
+}
+/* cookie JSON 可能很长，给足高度；auto-height 交给内容撑开更自然，
+   所以这里只兜底 min-height */
+.field__area {
+  width: 100%;
+  min-height: 260rpx;
+  font-size: 24rpx;
+  line-height: 1.6;
+  color: var(--txt);
+  background: var(--card-2);
+  border: 1rpx solid var(--line);
+  border-radius: var(--r-sm);
+  padding: 18rpx 20rpx;
+}

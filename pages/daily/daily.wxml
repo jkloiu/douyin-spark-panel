@@ -1,0 +1,159 @@
+<view class="page stagger">
+  <!-- 日期选择：今天（实时）→ 近 7 天存档 → 更早的归档包，一条列表全列 -->
+  <view class="card">
+    <view class="card__head">
+      <text class="card__title">日报</text>
+      <text class="card__sub">每天 09:00 / 18:00 存档</text>
+    </view>
+
+    <picker mode="selector" range="{{dateLabels}}" value="{{dateIdx}}" bindchange="onDate">
+      <view class="field__picker">
+        <text class="pick__cur">{{curLabel}}</text>
+        <text class="muted small">切换日期 ›</text>
+      </view>
+    </picker>
+
+    <view class="daynav">
+      <view class="daynav__i tap-s" data-dir="-1" bindtap="stepDay">‹ 更早</view>
+      <view class="daynav__i daynav__i--main tap-s" bindtap="onToday">今天（实时）</view>
+      <view class="daynav__i tap-s" data-dir="1" bindtap="stepDay">更新 ›</view>
+    </view>
+
+    <!-- 当天存了两份（早 09:00 / 晚 18:00）时才能切；snap 传的是下标，不是时间串 -->
+    <view wx:if="{{snaps.length > 1}}" class="snaps">
+      <view
+        wx:for="{{snaps}}"
+        wx:key="i"
+        class="snaps__i tap-s {{snapIdx === item.i ? 'snaps__i--on' : ''}}"
+        data-i="{{item.i}}"
+        bindtap="onSnap"
+      >
+        {{item.label}}
+      </view>
+    </view>
+
+    <view wx:if="{{meta}}" class="meta">{{meta}}</view>
+
+    <!-- [20261013] 范围 + 立即推送：对齐网页面板日报页的操作条。
+         范围只在名下有多个抖音号时才有意义（accCount 由 /api/accounts 得来）。 -->
+    <view class="dact">
+      <view wx:if="{{accCount > 1}}" class="seg">
+        <view class="seg__i tap-s {{scope === 'all' ? 'seg__i--on' : ''}}" data-s="all" bindtap="onScope">
+          全部账号
+        </view>
+        <view class="seg__i tap-s {{scope === 'cur' ? 'seg__i--on' : ''}}" data-s="cur" bindtap="onScope">
+          当前账号
+        </view>
+      </view>
+      <button class="btn btn--primary btn--block" bindtap="pushDaily" loading="{{pushing}}">
+        📤 立即推送给我
+      </button>
+      <view class="dact__hint">推的是「当前范围」的最新日报，走你在「推送设置」里配好的通道。</view>
+    </view>
+  </view>
+
+  <view wx:if="{{err}}" class="errbox">{{err}}</view>
+
+  <view wx:if="{{loading}}" class="card">
+    <view class="skeleton" style="width: 100%; height: 220rpx; margin-bottom: 24rpx"></view>
+    <view class="skeleton" style="width: 100%; height: 220rpx"></view>
+  </view>
+
+  <!-- 这一天没有存档：说清楚为什么 + 给出「有数据的日期」直接跳过去 -->
+  <view wx:elif="{{empty}}" class="card">
+    <view class="emptycard">
+      <text class="emptycard__icon">📭</text>
+      <view class="emptycard__mid">
+        <view class="emptycard__t">{{emptyTitle}}</view>
+        <view class="emptycard__s">{{note}}</view>
+      </view>
+    </view>
+    <view wx:if="{{pickDates.length}}" class="picks">
+      <view class="picks__l">有数据的日期</view>
+      <view class="picks__row">
+        <view class="pickchip pickchip--main tap-s" bindtap="onToday">今天（实时）</view>
+        <view
+          wx:for="{{pickDates}}"
+          wx:key="i"
+          class="pickchip tap-s"
+          data-i="{{item.i}}"
+          bindtap="onPickDate"
+        >
+          {{item.text}}
+        </view>
+      </view>
+    </view>
+  </view>
+
+  <block wx:else>
+    <view wx:for="{{accounts}}" wx:for-index="ai" wx:key="uid" class="card">
+      <view class="card__head">
+        <text class="card__title">{{item.uname}}</text>
+        <text class="badge {{item.badgeCls}}">{{item.badgeText}}</text>
+      </view>
+
+      <!-- 登录态：点一下强制重新校验。面板侧有 10 分钟缓存（避免每 5 秒轮询都去问抖音），
+           所以这里显示的可能不是此刻的真实状态，「↻」就是「我现在就要最新的」。 -->
+      <view class="drow">
+        <text class="drow__k">登录态</text>
+        <text
+          class="drow__v drow__v--tap {{item.sessionOk ? '' : 'drow__v--bad'}}"
+          data-i="{{ai}}"
+          bindtap="forceSession"
+        >
+          {{item.sessBusy ? '校验中…' : ((item.sessionOk ? '✅ ' : '❌ ') + item.sessionDesc + ' ↻')}}
+        </text>
+      </view>
+
+      <!-- 发送 -->
+      <view class="drow">
+        <text class="drow__k">今日发送</text>
+        <text class="drow__v">{{item.sendText}}</text>
+      </view>
+      <view wx:if="{{item.sendKinds.length}}" class="kinds">
+        <text wx:for="{{item.sendKinds}}" wx:key="*this" class="kind">{{item}}</text>
+      </view>
+
+      <!-- 火花 -->
+      <view class="drow">
+        <text class="drow__k">火花</text>
+        <text class="drow__v">{{item.sparkText}}</text>
+      </view>
+      <view wx:if="{{item.sparkWhen}}" class="drow drow--sub">
+        <text class="drow__k">数据时间</text>
+        <text class="drow__v">{{item.sparkWhen}}</text>
+      </view>
+
+      <!-- 火花分布 -->
+      <view class="sparkrow">
+        <text class="badge badge--danger" wx:if="{{item.spark.none || item.spark.broken}}">
+          无火花/已断 {{item.spark.none + item.spark.broken}}
+        </text>
+        <text class="badge badge--warn" wx:if="{{item.spark.low}}">告急 {{item.spark.low}}</text>
+        <text class="badge" wx:if="{{item.spark.stale}}">数据陈旧 {{item.spark.stale}}</text>
+      </view>
+
+      <!-- 好友明细 -->
+      <view wx:if="{{item.friends.length}}" class="flist">
+        <view wx:for="{{item.friends}}" wx:for-item="f" wx:key="name" class="frow">
+          <text class="frow__n">{{f.name}}</text>
+          <text class="badge {{f.levelCls}}">{{f.levelText}}</text>
+        </view>
+      </view>
+
+      <!-- 失败项（真失败，需要处理） -->
+      <view wx:if="{{item.fails.length}}" class="fails">
+        <view wx:for="{{item.fails}}" wx:for-item="fl" wx:key="*this" class="fails__i">⚠️ {{fl}}</view>
+      </view>
+
+      <!-- 重试后已成功（不需处理，只是提醒） -->
+      <view wx:if="{{item.retries.length}}" class="fails fails--ok">
+        <view wx:for="{{item.retries}}" wx:for-item="rt" wx:key="*this" class="fails__i fails__i--ok">♻️ {{rt}} · 已重试成功</view>
+      </view>
+    </view>
+
+    <view wx:if="{{!accounts.length}}" class="card">
+      <view class="empty">这一天没有日报数据</view>
+    </view>
+  </block>
+</view>

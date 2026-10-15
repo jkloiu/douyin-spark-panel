@@ -1,0 +1,571 @@
+/* ============================================================
+   全局样式 · 设计系统 v3（对齐网页面板 v4）
+   深色主题，底 #0e131d / 卡片 #151b26 / 主色烈焰橙 #ff7a45
+   令牌与 token 值直接照搬 web 端 style4.css 的 :root
+   （--bg / --panel / --panel2 / --line / --txt / --orange / --amber / --green / --red / --r），
+   换算关系：web 1px = 小程序 2rpx（卡 14px→28rpx，控件 10px→20rpx，小控件 8px→16rpx）。
+   ⚠️ 注释里千万不要出现「星号紧跟斜杠」这两个字符的组合 —— 会提前闭合块注释，语法直接炸。
+   ├─ 设计令牌：颜色 / 圆角 / 阴影 / 缓动
+   ├─ 通用动效：入场 · 错位 · 按压 · 骨架 · 蒙层
+   └─ 类名全部保留，只换值；新增令牌一律向后兼容
+   ============================================================ */
+page {
+  /* ── 颜色（深色三层表面）───────────────────────────── */
+  --bg: #0e131d;          /* Level 0 画布 */
+  --bg2: #0f141f;         /* 侧栏 / 输入框底 */
+  --card: #151b26;        /* Level 1 卡片 */
+  --card-2: #1b2331;      /* Level 2 悬停 / 次级块 */
+  --card-3: #1e2736;      /* Level 3 弹层 */
+  --txt: #e8ecf4;
+  --txt2: #8b95a7;
+  --txt3: #69738a;
+  --txt4: #4b5568;
+  --line: #232b38;
+  --line2: #2f3a4c;
+
+  /* ── 语义色 ───────────────────────────────────────── */
+  --primary: #ff7a45;     /* 烈焰橙（web --orange） */
+  --primary2: #ff925c;
+  --primary-soft: rgba(255, 122, 69, 0.12);
+  --grad-primary: linear-gradient(135deg, #ff8a57 0%, #ff6a3d 100%);
+  --grad-primary-soft: linear-gradient(135deg, rgba(255, 138, 87, 0.16) 0%, rgba(255, 106, 61, 0.08) 100%);
+  --ok: #22c55e;
+  --ok-soft: rgba(34, 197, 94, 0.14);
+  --warn: #f59e0b;
+  --warn-soft: rgba(245, 158, 11, 0.14);
+  --danger: #ef4444;
+  --danger-soft: rgba(239, 68, 68, 0.14);
+  --info: #5aa9ff;        /* web --blue */
+  --info-soft: rgba(90, 169, 255, 0.14);
+  --accent: #7c86ff;      /* 紫蓝，用于「第三方通道」这类中性标记 */
+  --accent-soft: rgba(124, 134, 255, 0.14);
+
+  /* ── 圆角（照 web：卡 14px / 控件 10px / 小件 8px）── */
+  --r-xs: 16rpx;
+  --r-sm: 20rpx;
+  --r-md: 28rpx;
+  --r-lg: 36rpx;
+  --r-pill: 999rpx;
+  --radius: var(--r-md);
+
+  /* ── 阴影（深色下靠「更黑 + 橙光」而不是灰度层次）── */
+  --sh-1: 0 1rpx 2rpx rgba(0, 0, 0, 0.28), 0 8rpx 22rpx -12rpx rgba(0, 0, 0, 0.5);
+  --sh-2: 0 4rpx 20rpx -2rpx rgba(0, 0, 0, 0.45);
+  --sh-3: 0 12rpx 32rpx -4rpx rgba(0, 0, 0, 0.65);
+  --sh-primary: 0 10rpx 26rpx -12rpx rgba(255, 122, 69, 0.5);
+  --glow: 0 0 16rpx -2rpx rgba(255, 122, 69, 0.28);
+
+  /* ── 动效 ─────────────────────────────────────────── */
+  --ease: cubic-bezier(0.25, 0.8, 0.35, 1);
+  --ease-out: cubic-bezier(0.16, 1, 0.3, 1);
+  --ease-spring: cubic-bezier(0.34, 1.4, 0.64, 1);
+  --t-fast: 0.16s;
+  --t: 0.24s;
+  --t-slow: 0.42s;
+
+  background: var(--bg);
+  color: var(--txt);
+  font-size: 28rpx;
+  line-height: 1.5;
+  font-family: -apple-system, BlinkMacSystemFont, 'PingFang SC', 'Helvetica Neue', sans-serif;
+  -webkit-font-smoothing: antialiased;
+}
+
+view, text, button, input, textarea, scroll-view, picker {
+  box-sizing: border-box;
+}
+
+/* ════════════════════════════════════════════════════════
+   动效库
+   ════════════════════════════════════════════════════════ */
+@keyframes fadeUp {
+  from {
+    opacity: 0;
+    transform: translate3d(0, 26rpx, 0);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+@keyframes popIn {
+  from {
+    opacity: 0;
+    transform: scale(0.9);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+@keyframes slideUp {
+  from {
+    transform: translate3d(0, 100%, 0);
+  }
+  to {
+    transform: none;
+  }
+}
+@keyframes slideDown {
+  from {
+    opacity: 0;
+    transform: translate3d(0, -14rpx, 0);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+@keyframes sk {
+  0% {
+    background-position: 100% 50%;
+  }
+  100% {
+    background-position: 0 50%;
+  }
+}
+/* 未读红点的呼吸光环 */
+@keyframes ping {
+  0% {
+    transform: scale(0.7);
+    opacity: 0.7;
+  }
+  80%,
+  100% {
+    transform: scale(2.1);
+    opacity: 0;
+  }
+}
+@keyframes breathe {
+  0%,
+  100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.45;
+  }
+}
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+/*
+ * fill-mode 用 backwards 而不是 both：
+ * both 会把末帧 transform 永久钉住，导致 :active 的缩放失效。
+ * backwards 只在延迟期间保留首帧（避免延迟期先闪一下），动画结束即交还正常样式。
+ */
+.anim {
+  animation: fadeUp var(--t-slow) var(--ease-out) backwards;
+}
+.anim--fade {
+  animation-name: fadeIn;
+  animation-duration: 0.3s;
+}
+.anim--pop {
+  animation-name: popIn;
+  animation-duration: 0.34s;
+  animation-timing-function: var(--ease-spring);
+}
+.anim--up {
+  animation-name: slideUp;
+  animation-duration: 0.34s;
+}
+.anim--down {
+  animation-name: slideDown;
+  animation-duration: 0.3s;
+}
+.anim--fast {
+  animation-duration: 0.26s;
+}
+/* 依次延时（配合 .anim 手动错位） */
+.anim--d1 { animation-delay: 0.04s; }
+.anim--d2 { animation-delay: 0.08s; }
+.anim--d3 { animation-delay: 0.12s; }
+.anim--d4 { animation-delay: 0.16s; }
+.anim--d5 { animation-delay: 0.2s; }
+.anim--d6 { animation-delay: 0.24s; }
+
+/*
+ * 错位入场：容器直接子元素按顺序依次淡入上移。
+ * 只加一个 .stagger 到最外层，不必给每个子元素写动画。
+ *
+ * ⚠️ 这里**不能**用 `*` 通配符：WXSS 编译器（wcsc）直接报
+ *    `error at token '*'` 让整个 wxss 编译失败；属性选择器 `[class]` 同样不支持。
+ *    所以只能把可能作为直接子元素的标签逐个列出。
+ *    目前全工程只有 view（15 页）与 button（我的页「退出登录」）。
+ *    若新增页面在 .stagger 根下直接用别的标签（image / scroll-view / picker…），
+ *    要同步加进下面三处列表 —— check_mp.py 有一条自检会替你抓到，
+ *    它从本文件的 `.stagger > X` 选择器里反解出「受支持标签」，再比对各页真实结构。
+ *
+ * .mask（弹窗蒙层，position:fixed）必须排除，否则会被祖先 transform 带偏。
+ */
+.stagger > view:not(.mask),
+.stagger > button {
+  animation: fadeUp var(--t-slow) var(--ease-out) backwards;
+}
+.stagger > view:not(.mask):nth-child(2),
+.stagger > button:nth-child(2) { animation-delay: 0.04s; }
+.stagger > view:not(.mask):nth-child(3),
+.stagger > button:nth-child(3) { animation-delay: 0.08s; }
+.stagger > view:not(.mask):nth-child(4),
+.stagger > button:nth-child(4) { animation-delay: 0.12s; }
+.stagger > view:not(.mask):nth-child(5),
+.stagger > button:nth-child(5) { animation-delay: 0.16s; }
+.stagger > view:not(.mask):nth-child(6),
+.stagger > button:nth-child(6) { animation-delay: 0.2s; }
+/*
+ * 第 7 个起不再动画：联系人 / 通知这类长列表动辄上百条，
+ * 逐个入场会同时开上百个合成层，低端机上会明显掉帧；
+ * 而这些项本来就在首屏之外，静止反而更稳。
+ */
+.stagger > view:not(.mask):nth-child(n + 7),
+.stagger > button:nth-child(n + 7) {
+  animation: none;
+}
+
+/* ── 按压反馈（替代逐元素 hover-class，:active 由 webview 原生支持）── */
+.tap {
+  transition: transform var(--t-fast) var(--ease), opacity var(--t-fast) var(--ease);
+}
+.tap:active {
+  transform: scale(0.972);
+  opacity: 0.9;
+}
+/* 行级：整行按下去压暗一点，比缩放更自然 */
+.tap-row {
+  transition: background-color var(--t-fast) var(--ease), opacity var(--t-fast) var(--ease);
+}
+.tap-row:active {
+  background-color: var(--card-2);
+  opacity: 0.92;
+}
+/* 轻触（分段控件 / 图标 / 小标签） */
+.tap-s {
+  transition: transform var(--t-fast) var(--ease), opacity var(--t-fast) var(--ease);
+}
+.tap-s:active {
+  transform: scale(0.93);
+  opacity: 0.8;
+}
+
+/* ── 未读红点（带呼吸光环）───────────────────────────── */
+.live-dot {
+  position: relative;
+}
+.live-dot::after {
+  content: '';
+  position: absolute;
+  left: 0;
+  top: 0;
+  width: 100%;
+  height: 100%;
+  border-radius: inherit;
+  background: inherit;
+  animation: ping 2.2s var(--ease-out) infinite;
+  pointer-events: none;
+}
+
+/* 降低动效偏好：关掉装饰性动画，保留可用性 */
+@media (prefers-reduced-motion: reduce) {
+  .anim,
+  .stagger > view,
+  .stagger > button,
+  .live-dot::after {
+    animation: none !important;
+  }
+  .card,
+  .btn,
+  .tap,
+  .tap-row {
+    transition-duration: 0.01s !important;
+  }
+}
+
+/* ════════════════════════════════════════════════════════
+   布局
+   ════════════════════════════════════════════════════════ */
+.page {
+  min-height: 100vh;
+  padding: 24rpx 24rpx calc(60rpx + env(safe-area-inset-bottom));
+}
+.page--tab {
+  padding-bottom: calc(40rpx + env(safe-area-inset-bottom));
+}
+
+.card {
+  background: var(--card);
+  border: 1rpx solid var(--line);
+  border-radius: var(--r-md);
+  padding: 28rpx;
+  margin-bottom: 24rpx;
+  box-shadow: var(--sh-1);
+  transition: box-shadow var(--t) var(--ease), transform var(--t) var(--ease);
+}
+/* 卡片本身可点（整卡当入口）时用，按下有浮起感 */
+.card--tap:active {
+  transform: scale(0.985);
+  box-shadow: var(--sh-2);
+}
+
+.card__head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 20rpx;
+}
+.card__head:last-child {
+  margin-bottom: 0;
+}
+.card__title {
+  font-size: 30rpx;
+  font-weight: 600;
+  letter-spacing: 0.2rpx;
+}
+.card__sub {
+  font-size: 24rpx;
+  color: var(--txt3);
+  transition: opacity var(--t-fast) var(--ease);
+}
+.card__sub:active {
+  opacity: 0.6;
+}
+
+.row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 22rpx 0;
+  border-bottom: 1rpx solid var(--line);
+}
+.row:last-child {
+  border-bottom: none;
+  padding-bottom: 0;
+}
+.row:first-child {
+  padding-top: 0;
+}
+.row__k {
+  color: var(--txt2);
+  font-size: 27rpx;
+  flex: none;
+}
+.row__v {
+  font-size: 27rpx;
+  text-align: right;
+  margin-left: 24rpx;
+  word-break: break-all;
+}
+
+.muted {
+  color: var(--txt3);
+}
+.small {
+  font-size: 24rpx;
+}
+.mono {
+  font-family: 'SF Mono', Menlo, Consolas, monospace;
+}
+
+/* ════════════════════════════════════════════════════════
+   徽章
+   ════════════════════════════════════════════════════════ */
+.badge {
+  display: inline-block;
+  font-size: 22rpx;
+  line-height: 1.6;
+  padding: 2rpx 14rpx;
+  border-radius: var(--r-pill);
+  background: var(--line);
+  color: var(--txt2);
+  flex: none;
+}
+.badge--ok {
+  background: var(--ok-soft);
+  color: var(--ok);
+}
+.badge--warn {
+  background: var(--warn-soft);
+  color: var(--warn);
+}
+.badge--danger {
+  background: var(--danger-soft);
+  color: var(--danger);
+}
+.badge--primary {
+  background: var(--primary-soft);
+  color: var(--primary);
+}
+
+/* ════════════════════════════════════════════════════════
+   按钮
+   ════════════════════════════════════════════════════════ */
+.btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 88rpx;
+  border-radius: var(--r-sm);
+  font-size: 30rpx;
+  font-weight: 500;
+  background: var(--card);
+  color: var(--txt);
+  border: 1rpx solid var(--line2);
+  padding: 0 32rpx;
+  transition: transform var(--t-fast) var(--ease), opacity var(--t-fast) var(--ease),
+    box-shadow var(--t) var(--ease), background-color var(--t-fast) var(--ease);
+}
+.btn::after {
+  border: none;
+}
+.btn:active {
+  transform: scale(0.975);
+  opacity: 0.9;
+}
+.btn--primary {
+  background: var(--primary);
+  color: #fff;
+  border-color: var(--primary);
+  box-shadow: var(--sh-primary);
+}
+.btn--primary:active {
+  box-shadow: 0 4rpx 14rpx -8rpx rgba(255, 122, 69, 0.6);
+}
+.btn--danger {
+  color: var(--danger);
+  border-color: rgba(239, 68, 68, 0.3);
+}
+.btn--ghost {
+  background: transparent;
+  border-color: transparent;
+  color: var(--txt2);
+}
+.btn--sm {
+  height: 60rpx;
+  font-size: 25rpx;
+  border-radius: var(--r-xs);
+  padding: 0 22rpx;
+  display: inline-flex;
+}
+.btn--block {
+  width: 100%;
+}
+.btn[disabled] {
+  opacity: 0.45;
+}
+.btn[disabled]:active {
+  transform: none;
+}
+
+/* ════════════════════════════════════════════════════════
+   头像
+   ════════════════════════════════════════════════════════ */
+.avatar {
+  width: 88rpx;
+  height: 88rpx;
+  border-radius: 50%;
+  background: var(--line);
+  flex: none;
+  overflow: hidden;
+}
+.avatar--sm {
+  width: 64rpx;
+  height: 64rpx;
+}
+
+/* ════════════════════════════════════════════════════════
+   空态 / 加载
+   ════════════════════════════════════════════════════════ */
+.empty {
+  text-align: center;
+  color: var(--txt3);
+  font-size: 26rpx;
+  padding: 70rpx 0;
+  animation: fadeIn 0.3s var(--ease) backwards;
+}
+.skeleton {
+  background: linear-gradient(90deg, #1a2130 25%, #232c3d 37%, #1a2130 63%);
+  background-size: 400% 100%;
+  animation: sk 1.4s var(--ease) infinite;
+  border-radius: var(--r-xs);
+}
+
+/* ════════════════════════════════════════════════════════
+   表单
+   ════════════════════════════════════════════════════════ */
+.field {
+  margin-bottom: 28rpx;
+}
+.field__label {
+  font-size: 26rpx;
+  color: var(--txt2);
+  margin-bottom: 12rpx;
+  display: block;
+}
+.field__input,
+.field__picker {
+  width: 100%;
+  height: 88rpx;
+  line-height: 88rpx;
+  background: var(--card-2);
+  border: 1rpx solid var(--line);
+  border-radius: var(--r-sm);
+  padding: 0 24rpx;
+  font-size: 28rpx;
+  transition: border-color var(--t) var(--ease), background-color var(--t) var(--ease);
+}
+.field__picker {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+.field__picker:active {
+  background: var(--card-3);
+}
+.field__hint {
+  font-size: 23rpx;
+  color: var(--txt3);
+  margin-top: 8rpx;
+}
+/* [v3 深色] 输入框的占位符 / 光标：默认占位色是按浅色底定的，深色底上几乎看不见 */
+input::placeholder,
+textarea::placeholder {
+  color: var(--txt4);
+}
+input,
+textarea {
+  caret-color: var(--primary);
+}
+
+/* ════════════════════════════════════════════════════════
+   弹层（蒙层 + 内容）
+   ════════════════════════════════════════════════════════ */
+.mask {
+  animation: fadeIn 0.22s var(--ease) backwards;
+}
+
+/* ════════════════════════════════════════════════════════
+   段标题 / 分隔 / 安全区
+   ════════════════════════════════════════════════════════ */
+.section-title {
+  font-size: 26rpx;
+  color: var(--txt3);
+  padding: 8rpx 4rpx 16rpx;
+}
+.divider {
+  height: 1rpx;
+  background: var(--line);
+  margin: 20rpx 0;
+}
+.safe-bottom {
+  height: env(safe-area-inset-bottom);
+}

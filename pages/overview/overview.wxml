@@ -1,0 +1,146 @@
+<view class="page page--tab stagger">
+  <!-- 账号条 -->
+  <view class="accbar tap" bindtap="onSwitchAccount">
+    <view class="accbar__av">
+      <text>{{accInitial}}</text>
+      <image wx:if="{{accAvatar}}" class="accbar__avimg" src="{{accAvatar}}" mode="aspectFill" />
+    </view>
+    <view class="accbar__mid">
+      <view class="accbar__name">{{accName || '未选择账号'}}</view>
+      <view class="accbar__sub">
+        <text wx:if="{{accLive}}">已登录</text>
+        <text wx:else>校验中…</text>
+        <text> · {{accList.length}} 个账号</text>
+      </view>
+    </view>
+    <view class="accbar__btn">切换</view>
+  </view>
+
+  <view wx:if="{{err}}" class="errbox">{{err}}</view>
+
+  <!-- 骨架屏 -->
+  <block wx:if="{{loading}}">
+    <view class="card">
+      <view class="skeleton" style="width: 34%; height: 34rpx"></view>
+      <view class="skeleton" style="width: 100%; height: 76rpx; margin-top: 24rpx"></view>
+    </view>
+    <view class="card">
+      <view class="skeleton" style="width: 34%; height: 34rpx"></view>
+      <view class="skeleton" style="width: 100%; height: 132rpx; margin-top: 24rpx"></view>
+    </view>
+  </block>
+
+  <block wx:else>
+    <!-- 今日状态 -->
+    <view class="card">
+      <view class="card__head">
+        <text class="card__title">今日发送</text>
+        <text class="card__sub">{{date}}</text>
+      </view>
+      <view class="today {{todaySent ? 'today--ok' : 'today--wait'}}">
+        <text class="today__icon">{{todaySent ? '✅' : '⏳'}}</text>
+        <view class="today__body">
+          <view class="today__t">{{todaySent ? '今日已完成发送' : '今天还没有发送记录'}}</view>
+          <view class="today__s">
+            <block wx:if="{{recent}}">
+              最近：{{recent.task}} · {{recent.tsText}}
+              <text wx:if="{{recent.success}}"> · 成功</text>
+              <text wx:else class="today__fail"> · 失败</text>
+            </block>
+            <block wx:else>暂无执行记录</block>
+          </view>
+        </view>
+      </view>
+    </view>
+
+    <!-- 火花总览 -->
+    <view class="card">
+      <view class="card__head">
+        <text class="card__title">火花总览</text>
+        <text class="card__sub">{{stats.total}} 位好友</text>
+      </view>
+      <view class="kpis">
+        <view class="kpi">
+          <view class="kpi__n">{{stats.max}}</view>
+          <view class="kpi__l">最高天数</view>
+        </view>
+        <view class="kpi">
+          <view class="kpi__n">{{stats.min}}</view>
+          <view class="kpi__l">最低天数</view>
+        </view>
+        <view class="kpi">
+          <view class="kpi__n {{stats.risk ? 'kpi__n--risk' : ''}}">{{stats.risk}}</view>
+          <view class="kpi__l">需关注</view>
+        </view>
+      </view>
+      <view class="chips">
+        <text class="badge badge--danger" wx:if="{{stats.risk}}">危险 {{stats.risk}}</text>
+        <text class="badge badge--warn" wx:if="{{stats.warn}}">注意 {{stats.warn}}</text>
+        <!-- [20261014b] 「正常 / 已续」是常态 → 中性灰，不再抢眼；
+             只有「未续 / 危险 / 注意」这些要动手的才上彩色 -->
+        <text class="badge" wx:if="{{stats.ok}}">正常 {{stats.ok}}</text>
+        <text class="badge" wx:if="{{stats.sent}}">今日已续 {{stats.sent}}</text>
+        <text class="badge badge--warn" wx:if="{{stats.pending}}">今日未续 {{stats.pending}}</text>
+        <text class="badge" wx:if="{{stats.stale}}">数据陈旧 {{stats.stale}}</text>
+      </view>
+    </view>
+
+    <!-- 好友火花 -->
+    <view class="card">
+      <view class="card__head">
+        <text class="card__title">好友火花</text>
+        <text class="card__sub" bindtap="goSpark">查看全部 ›</text>
+      </view>
+      <view wx:if="{{!friends.length}}" class="empty">还没有好友数据</view>
+      <view
+        wx:for="{{friends}}"
+        wx:key="short_id"
+        class="fitem tap-row"
+        data-sid="{{item.short_id}}"
+        bindtap="goFriend"
+      >
+        <image
+          wx:if="{{item.__avatar}}"
+          class="avatar avatar--sm"
+          src="{{item.__avatar}}"
+          mode="aspectFill"
+        />
+        <view wx:else class="avatar avatar--sm fitem__ph">{{item.initial}}</view>
+        <view class="fitem__mid">
+          <view class="fitem__name">{{item.name}}</view>
+          <view class="fitem__sub">
+            <!-- [20261014b] 今日火花续没续：已续是常态 → 中性灰徽章，不抢眼；
+                 未续才需要动手 → 琥珀色，一眼就能扫到「还有谁没续」 -->
+            <text class="badge {{item.todaySent ? '' : 'badge--warn'}}">{{item.todaySent ? '已续' : '未续'}}</text>
+            <text wx:if="{{item.fresh}}" class="small muted">数据已同步</text>
+            <text wx:else class="small fitem__stale">数据陈旧</text>
+          </view>
+        </view>
+        <text class="badge {{item.levelCls}}">{{item.levelText}}</text>
+      </view>
+    </view>
+
+    <!-- 快捷入口 -->
+    <view class="quick">
+      <view class="quick__i tap" bindtap="goDaily">
+        <view class="quick__e">📊</view>
+        <text class="quick__t">日报</text>
+      </view>
+      <view class="quick__i tap" bindtap="goContacts">
+        <view class="quick__e">👥</view>
+        <text class="quick__t">抓联系人</text>
+      </view>
+      <view class="quick__i tap" bindtap="goAccounts">
+        <view class="quick__e">🔑</view>
+        <text class="quick__t">账号</text>
+      </view>
+      <view class="quick__i tap" bindtap="goNotif">
+        <view class="quick__e">
+          🔔
+          <text wx:if="{{notifCount}}" class="quick__dot live-dot">{{notifCount}}</text>
+        </view>
+        <text class="quick__t">通知</text>
+      </view>
+    </view>
+  </block>
+</view>

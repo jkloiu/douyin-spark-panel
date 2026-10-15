@@ -1,0 +1,107 @@
+/* 系统状态页
+   铁律：WXSS 不支持 * 通配符 / [attr] 属性选择器 / 裸伪类，
+   所有样式只能按类名逐个写（本文件不引入任何通配符）。 */
+
+.errbox {
+  background: var(--danger-soft);
+  color: var(--danger);
+  font-size: 25rpx;
+  line-height: 1.7;
+  padding: 20rpx 24rpx;
+  border-radius: 12rpx;
+  margin-bottom: 24rpx;
+}
+
+/* 说明性文字：比正文弱，用来解释「这意味着什么」 */
+.hint {
+  font-size: 23rpx;
+  color: var(--txt3);
+  line-height: 1.7;
+  margin-top: 16rpx;
+  padding-top: 16rpx;
+  border-top: 1rpx solid var(--line);
+}
+
+/* ── 键值行 ── */
+.drow {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  padding: 14rpx 0;
+}
+.drow__k {
+  font-size: 25rpx;
+  color: var(--txt3);
+  flex: none;
+}
+.drow__v {
+  font-size: 26rpx;
+  text-align: right;
+  margin-left: 20rpx;
+  flex: 1;
+  word-break: break-all;
+}
+.drow__v--bad {
+  color: var(--danger);
+}
+
+/* ── 运行中的任务行 ── */
+.rrow {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 18rpx 0;
+  border-bottom: 1rpx solid var(--line);
+}
+.rrow:last-child {
+  border-bottom: 0;
+}
+.rrow__l {
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+  margin-right: 20rpx;
+}
+.rrow__n {
+  font-size: 27rpx;
+  color: var(--txt);
+}
+.rrow__s {
+  font-size: 23rpx;
+  color: var(--txt3);
+  margin-top: 6rpx;
+}
+.rrow__btn {
+  flex: none;
+  font-size: 24rpx;
+  color: var(--danger);
+  border: 1rpx solid var(--danger);
+  border-radius: var(--r-pill);
+  padding: 10rpx 28rpx;
+}
+.rrow__btn--off {
+  color: var(--txt3);
+  border-color: var(--line);
+}
+.rrow__idle {
+  flex: none;
+  font-size: 24rpx;
+  color: var(--txt3);
+}
+
+/* crontab 原文：等宽 + 可横向滚不动，只能换行 */
+.cron {
+  font-family: 'SF Mono', Menlo, Consolas, monospace;
+  font-size: 22rpx;
+  color: var(--txt2);
+  line-height: 1.8;
+  word-break: break-all;
+  white-space: pre-wrap;
+}
+
+.footnote {
+  font-size: 22rpx;
+  color: var(--txt3);
+  text-align: center;
+  padding: 16rpx 0 8rpx;
+}

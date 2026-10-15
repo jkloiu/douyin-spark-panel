@@ -1,0 +1,117 @@
+<view class="page stagger">
+  <view class="card">
+    <view class="card__head">
+      <text class="card__title">抖音账号</text>
+      <text class="card__sub">{{accounts.length}} 个 · {{live ? '已校验' : '校验中…'}}</text>
+    </view>
+    <view class="hintbox">
+      抖音自动化只在服务器上运行。这里的登录态决定服务器能不能替你发消息。
+    </view>
+    <view class="hintbox hintbox--own">
+      <text wx:if="{{isAdmin}}">你是管理员，看到的是全部抖音号；每个号后面的「归属」就是它属于哪个面板用户。</text>
+      <text wx:else>这里只显示你名下绑定的抖音号。归属关系由管理员在「面板用户」页分配。</text>
+    </view>
+    <button class="btn btn--primary btn--block" bindtap="addAccount">+ 添加账号</button>
+  </view>
+
+  <view wx:if="{{err}}" class="errbox">{{err}}</view>
+
+  <view wx:if="{{loading}}" class="card">
+    <view class="skeleton" style="width: 100%; height: 180rpx; margin-bottom: 24rpx"></view>
+    <view class="skeleton" style="width: 100%; height: 180rpx"></view>
+  </view>
+
+  <block wx:else>
+    <view wx:if="{{!accounts.length}}" class="card">
+      <view class="empty">还没有绑定抖音账号</view>
+    </view>
+
+    <view wx:for="{{accounts}}" wx:key="unique_id" class="card">
+      <view class="acard__namerow">
+        <text class="acard__name">{{item.username || item.unique_id}}</text>
+        <text class="badge {{item.statusCls}}">{{item.statusText}}</text>
+      </view>
+
+      <view class="acard__pills">
+        <text class="apid mono">{{item.unique_id}}</text>
+        <text class="apid">{{item.count ? 'cookie ' + item.count : '未导入 cookie'}}</text>
+        <text wx:if="{{item.targets}}" class="apid">目标 {{item.targets}} 位</text>
+        <text
+          wx:if="{{isAdmin}}"
+          class="apid apid--own {{item.ownerUnset ? 'apid--unset' : ''}}"
+        >{{item.ownerText}}</text>
+      </view>
+
+      <view wx:if="{{item.desc}}" class="acard__desc">{{item.desc}}</view>
+
+      <view class="acard__ops">
+        <button class="btn btn--sm" data-uid="{{item.unique_id}}" bindtap="checkSession" disabled="{{busy === item.unique_id}}">
+          检测
+        </button>
+        <button class="btn btn--sm btn--primary" data-uid="{{item.unique_id}}" bindtap="goQr">
+          扫码登录
+        </button>
+        <button class="btn btn--sm" data-uid="{{item.unique_id}}" bindtap="goHead">
+          短信登录
+        </button>
+        <button class="btn btn--sm" data-uid="{{item.unique_id}}" bindtap="openEdit">
+          编辑
+        </button>
+        <button class="btn btn--sm" data-uid="{{item.unique_id}}" bindtap="openImport">
+          导入 cookie
+        </button>
+        <button class="btn btn--sm btn--danger" data-uid="{{item.unique_id}}" bindtap="clearSession" disabled="{{busy === item.unique_id}}">
+          清登录态
+        </button>
+        <button class="btn btn--sm btn--danger" data-uid="{{item.unique_id}}" bindtap="del" disabled="{{busy === item.unique_id}}">
+          删除
+        </button>
+      </view>
+    </view>
+  </block>
+</view>
+
+<!-- 添加/编辑弹窗 -->
+<view wx:if="{{showForm}}" class="mask" bindtap="closeForm">
+  <view class="dialog anim--pop" catchtap="noop">
+    <view class="dialog__title">{{formMode === 'add' ? '添加抖音账号' : '编辑账号'}}</view>
+    <view class="field">
+      <text class="field__label">备注名 / 用户名</text>
+      <input class="field__input" value="{{formName}}" bindinput="onFormName" placeholder="如 polarstar" />
+    </view>
+    <view class="field">
+      <text class="field__label">抖音号（unique_id）</text>
+      <input class="field__input" value="{{formId}}" bindinput="onFormId" placeholder="11 位数字抖音号" />
+      <view class="field__hint">就是抖音资料页显示的抖音号；没设过自定义号的填那串数字。</view>
+    </view>
+    <view class="dialog__ops">
+      <button class="btn btn--ghost" bindtap="closeForm">取消</button>
+      <button class="btn btn--primary" bindtap="submitForm" loading="{{busy === 'form'}}">
+        {{formMode === 'add' ? '添加' : '保存'}}
+      </button>
+    </view>
+  </view>
+</view>
+
+<!-- [20261013] 导入 cookie：粘贴抖音导出的 cookie JSON 数组，直接覆盖写入该账号的登录态 -->
+<view wx:if="{{showImport}}" class="mask" bindtap="closeImport">
+  <view class="dialog anim--pop" catchtap="noop">
+    <view class="dialog__title">导入 cookie</view>
+    <view class="imp__uid mono">{{impUid}}</view>
+    <view class="field">
+      <text class="field__label">cookie JSON 数组</text>
+      <textarea
+        class="field__area"
+        value="{{impText}}"
+        bindinput="onImpText"
+        placeholder='粘贴形如 [{"name":"sessionid","value":"..."}] 的 JSON 数组'
+        maxlength="-1"
+      />
+      <view class="field__hint">导入后不用重新扫码登录；粘完点「导入」，再用「检测」确认会话有效。</view>
+    </view>
+    <view class="dialog__ops">
+      <button class="btn btn--ghost" bindtap="closeImport">取消</button>
+      <button class="btn btn--primary" bindtap="submitImport" loading="{{busy === 'import'}}">导入</button>
+    </view>
+  </view>
+</view>

@@ -1,0 +1,20 @@
+.switchrow {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 20rpx 0;
+}
+.switchrow__t {
+  font-size: 28rpx;
+}
+.textarea {
+  width: 100%;
+  min-height: 140rpx;
+  background: var(--card-2);
+  border: 1rpx solid var(--line);
+  border-radius: 14rpx;
+  padding: 20rpx 24rpx;
+  font-size: 28rpx;
+  line-height: 1.6;
+  box-sizing: border-box;
+}

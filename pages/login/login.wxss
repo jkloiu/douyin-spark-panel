@@ -1,0 +1,60 @@
+.login {
+  min-height: 100vh;
+  padding: 0 48rpx;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  /* [v3 深色] 照搬网页面板 v4 登录页的背景光斑：
+     左上角一团橙光 + 左下角一点冷蓝，其余保持画布底色 ——
+     比纯色底更有层次，也和 web 端「同一套设计语言」。 */
+  background:
+    radial-gradient(900rpx 520rpx at 50% -12%, rgba(255, 122, 69, 0.16), transparent 62%),
+    radial-gradient(760rpx 620rpx at 6% 108%, rgba(90, 169, 255, 0.07), transparent 58%),
+    var(--bg);
+}
+
+.login__brand {
+  text-align: center;
+  margin-bottom: 56rpx;
+}
+.login__logo {
+  font-size: 92rpx;
+  line-height: 1.1;
+}
+.login__title {
+  font-size: 46rpx;
+  font-weight: 700;
+  margin-top: 12rpx;
+  letter-spacing: 2rpx;
+}
+.login__desc {
+  font-size: 25rpx;
+  color: var(--txt3);
+  margin-top: 10rpx;
+}
+
+.login__card {
+  padding: 36rpx 32rpx 32rpx;
+}
+
+.login__err {
+  background: var(--danger-soft);
+  color: var(--danger);
+  font-size: 25rpx;
+  padding: 18rpx 22rpx;
+  border-radius: 12rpx;
+  margin-bottom: 22rpx;
+  line-height: 1.5;
+}
+
+.login__foot {
+  text-align: center;
+  margin-top: 40rpx;
+}
+.login__envfail {
+  color: var(--warn);
+}
+
+.ph {
+  color: var(--txt3);
+}

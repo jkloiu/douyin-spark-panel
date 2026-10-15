@@ -1,0 +1,220 @@
+<view class="page page--tab stagger">
+  <!-- 账号条：只看当前账号 -->
+  <view wx:if="{{scope !== 'all'}}" class="accbar tap" bindtap="onSwitchAccount">
+    <view class="accbar__av">
+      <text>{{accInitial}}</text>
+      <image wx:if="{{accAvatar}}" class="accbar__avimg" src="{{accAvatar}}" mode="aspectFill" />
+    </view>
+    <view class="accbar__mid">
+      <view class="accbar__name">{{accName || '未选择账号'}}</view>
+      <view class="accbar__sub">
+        <text wx:if="{{accLive}}">已登录</text>
+        <text wx:else>校验中…</text>
+        <text wx:if="{{tab === 'records'}}"> · 共 {{total}} 条记录</text>
+      </view>
+    </view>
+    <view class="accbar__btn">切换</view>
+  </view>
+
+  <!-- 账号条：全部账号合并查看 -->
+  <view wx:else class="accbar tap" data-s="cur" bindtap="onScope">
+    <view class="accbar__av accbar__av--all">全</view>
+    <view class="accbar__mid">
+      <view class="accbar__name">全部账号</view>
+      <view class="accbar__sub">名下所有抖音号合并 · 共 {{total}} 条记录</view>
+    </view>
+    <view class="accbar__btn">切回</view>
+  </view>
+
+  <!-- 查看范围：名下多于 1 个抖音号才有意义 -->
+  <view wx:if="{{accList.length > 1}}" class="seg">
+    <view class="seg__i tap-s {{scope === 'cur' ? 'seg__i--on' : ''}}" data-s="cur" bindtap="onScope">
+      只看当前账号
+    </view>
+    <view class="seg__i tap-s {{scope === 'all' ? 'seg__i--on' : ''}}" data-s="all" bindtap="onScope">
+      全部账号
+    </view>
+  </view>
+
+  <view class="tabs">
+    <view class="tabs__i tap-s {{tab === 'records' ? 'tabs__i--on' : ''}}" data-t="records" bindtap="onTab">
+      发送记录
+    </view>
+    <view class="tabs__i tap-s {{tab === 'logs' ? 'tabs__i--on' : ''}}" data-t="logs" bindtap="onTab">
+      运行日志
+    </view>
+  </view>
+
+  <view wx:if="{{err}}" class="errbox">{{err}}</view>
+
+  <!-- 发送记录 -->
+  <block wx:if="{{tab === 'records'}}">
+    <view wx:if="{{loading}}" class="card">
+      <view class="skeleton" style="width: 100%; height: 80rpx; margin-bottom: 18rpx"></view>
+      <view class="skeleton" style="width: 100%; height: 80rpx"></view>
+    </view>
+
+    <block wx:else>
+      <!-- 批量 / 单独 筛选 -->
+      <view wx:if="{{total}}" class="fbar">
+        <view class="fchip tap-s {{typeFilter === '' ? 'fchip--on' : ''}}" data-t="" bindtap="onType">
+          全部 {{total}}
+        </view>
+        <view class="fchip tap-s {{typeFilter === 'batch' ? 'fchip--on' : ''}}" data-t="batch" bindtap="onType">
+          批量 {{nBatch}}
+        </view>
+        <view class="fchip tap-s {{typeFilter === 'single' ? 'fchip--on' : ''}}" data-t="single" bindtap="onType">
+          单独 {{nSingle}}
+        </view>
+      </view>
+
+      <!-- 日期选择器：触发按钮 + 日历弹层（与网页端「火花守护」App 的 .dsel/.cal 同一套 UI）。
+           原来是 21 个日期芯片挤在一条横向滚动条里：桌面端滚轮滚不动、手机上要滑很久，
+           而且只能选「已取到记录里出现过的日期」——用户反馈「不能筛选日期」。
+           现在点一下弹出整月日历：有记录的日期带橙点、今天橙字、选中实心橙，
+           上下月翻页 + 「今天 / 全部日期」两个快捷动作，任意日期都能选。 -->
+      <view class="dsel tap-s {{dateFilter === '' ? '' : 'dsel--on'}}" bindtap="onCalToggle">
+        <text class="dsel__ic">📅</text>
+        <text class="dsel__t">{{dateLabel}}</text>
+        <text class="dsel__arrow">▾</text>
+      </view>
+
+      <view wx:if="{{calOpen}}" class="calMask" bindtap="onCalToggle"></view>
+      <view wx:if="{{calOpen}}" class="cal">
+        <view class="cal__hd">
+          <view class="cal__nav tap-s" data-m="-1" bindtap="onCalNav">‹</view>
+          <text class="cal__ym">{{calYmText}}</text>
+          <view class="cal__nav tap-s" data-m="1" bindtap="onCalNav">›</view>
+        </view>
+        <view class="cal__wk">
+          <text wx:for="{{wk}}" wx:key="*this">{{item}}</text>
+        </view>
+        <view class="cal__grid">
+          <view
+            wx:for="{{calCells}}"
+            wx:key="d"
+            class="cal__d {{item.empty ? 'cal__d--empty' : ''}} {{item.has ? 'has' : ''}} {{item.today ? 'today' : ''}} {{dateFilter === item.d ? 'on' : ''}}"
+            data-d="{{item.d}}"
+            bindtap="onCalPick"
+          >
+            <text wx:if="{{!item.empty}}" class="cal__n">{{item.n}}</text>
+            <text wx:if="{{item.has}}" class="cal__dot"></text>
+          </view>
+        </view>
+        <view class="cal__ft">
+          <view class="cal__btn tap-s" data-v="__today" bindtap="onCalPick">今天</view>
+          <view class="cal__btn tap-s {{dateFilter === '' ? 'cal__btn--on' : ''}}" data-v="" bindtap="onCalPick">全部日期</view>
+        </view>
+      </view>
+
+      <view wx:if="{{!groups.length}}" class="card">
+        <view class="empty">{{total ? (dateFilter ? ('这一天（' + dateFilter + '）没有记录') : '这个筛选下没有记录') : '还没有发送记录'}}</view>
+      </view>
+
+      <view wx:for="{{groups}}" wx:for-index="gi" wx:key="key" class="card">
+        <view class="card__head">
+          <text class="card__title">{{item.date}}</text>
+          <text class="card__sub">批量 {{item.batch}} · 单独 {{item.single}}</text>
+        </view>
+        <view
+          wx:for="{{item.items}}"
+          wx:for-item="r"
+          wx:for-index="ri"
+          wx:key="ri"
+          class="ritem tap-row"
+          data-gi="{{gi}}"
+          data-ri="{{ri}}"
+          bindtap="onRec"
+        >
+          <text class="ritem__time mono">{{r.time}}</text>
+          <view class="ritem__mid">
+            <view class="ritem__t">
+              <text class="kindtag {{r.isBatch ? 'kindtag--batch' : 'kindtag--single'}}">{{r.kind}}</text>
+              <text class="acctag">{{r.account}}</text>
+              <text class="ritem__name">{{r.targetName}}</text>
+            </view>
+            <view wx:if="{{r.content}}" class="ritem__s">{{r.content}}</view>
+          </view>
+          <text class="badge {{(r.ok || r.retried) ? 'badge--ok' : 'badge--danger'}}">{{r.retried ? ('♻️ ' + r.retried + ' 重试成功') : (r.ok ? '成功' : '失败')}}</text>
+        </view>
+      </view>
+
+      <!-- 面板默认只回「最后 200 条」，以前的版本无法再往前翻，历史记录等于看不到 -->
+      <view wx:if="{{hasMore}}" class="fbar">
+        <view class="fchip tap-s" bindtap="loadMore">
+          {{loadingMore ? '加载中…' : '加载更早的记录'}}
+        </view>
+      </view>
+    </block>
+  </block>
+
+  <!-- [20261014] 记录详情弹窗：点列表里任意一条弹出，看完整时间/对象/结果/消息全文 -->
+  <view wx:if="{{detail}}" class="mask" bindtap="closeDetail">
+    <view class="dialog anim--pop" catchtap="noop">
+      <view class="dialog__title">发送详情</view>
+
+      <view class="drow">
+        <text class="drow__k">时间</text>
+        <text class="drow__v mono">{{detail.tsText}}</text>
+      </view>
+      <view class="drow">
+        <text class="drow__k">类型</text>
+        <text class="drow__v">
+          <text class="kindtag {{detail.isBatch ? 'kindtag--batch' : 'kindtag--single'}}">{{detail.kind}}</text>
+        </text>
+      </view>
+      <view class="drow">
+        <text class="drow__k">账号</text>
+        <text class="drow__v">{{detail.account}}</text>
+      </view>
+      <view class="drow">
+        <text class="drow__k">对象</text>
+        <text class="drow__v">{{detail.targetName}}</text>
+      </view>
+      <view class="drow">
+        <text class="drow__k">结果</text>
+        <text class="drow__v">
+          <text class="badge {{(detail.ok || detail.retried) ? 'badge--ok' : 'badge--danger'}}">
+            {{detail.retried ? ('♻️ ' + detail.retried + ' 重试成功') : (detail.ok ? '成功' : '失败')}}
+          </text>
+        </text>
+      </view>
+
+      <view wx:if="{{detail.content}}" class="dmsg">
+        <view class="dmsg__t">消息全文</view>
+        <view class="dmsg__c" user-select="{{true}}">{{detail.content}}</view>
+      </view>
+
+      <view class="dialog__ops">
+        <button class="btn btn--primary" bindtap="closeDetail">关闭</button>
+      </view>
+    </view>
+  </view>
+
+  <!-- 运行日志 -->
+  <block wx:else>
+    <view class="card">
+      <view class="card__head">
+        <text class="card__title">运行日志</text>
+        <text class="card__sub" bindtap="copyLog">复制</text>
+      </view>
+      <view wx:if="{{logLoading}}" class="skeleton" style="width: 100%; height: 240rpx"></view>
+      <block wx:elif="{{logText}}">
+        <!-- 必须用 scroll-view：普通 view 加 max-height + overflow:hidden 会把
+             超出部分裁掉且无法滑动，日志就等于「卡死」看不全。
+             scroll-into-view 指向末尾锚点 => 一打开就停在最新一行。 -->
+        <scroll-view
+          class="logbox"
+          style="height: {{logH}}px"
+          scroll-y="true"
+          scroll-into-view="{{logEnd}}"
+        >
+          <text class="logtext" user-select="{{true}}">{{logText}}</text>
+          <view id="logend" class="logend"></view>
+        </scroll-view>
+        <view class="loghint">已停在最新一行 · 共 {{logLines}} 行 · 上滑看历史</view>
+      </block>
+      <view wx:else class="empty">暂无日志</view>
+    </view>
+  </block>
+</view>

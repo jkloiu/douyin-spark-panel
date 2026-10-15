@@ -1,0 +1,400 @@
+.accbar {
+  display: flex;
+  align-items: center;
+  background: var(--card);
+  border: 1rpx solid var(--line);
+  border-radius: var(--radius);
+  padding: 22rpx 24rpx;
+  margin-bottom: 24rpx;
+  box-shadow: var(--sh-1);
+}
+.accbar__av {
+  width: 76rpx;
+  height: 76rpx;
+  border-radius: 50%;
+  background: var(--grad-primary);
+  color: #fff;
+  font-size: 32rpx;
+  font-weight: 600;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex: none;
+  position: relative;
+  overflow: hidden;
+}
+/* 账号真实头像：绝对定位覆盖在首字母占位上（与网页面板切换器同款：字母垫底、图盖上面） */
+.accbar__avimg {
+  position: absolute;
+  left: 0;
+  top: 0;
+  width: 76rpx;
+  height: 76rpx;
+}
+.accbar__av--all {
+  background: linear-gradient(135deg, #3a4356, #4b5568);
+}
+.accbar__mid {
+  flex: 1;
+  margin-left: 20rpx;
+  min-width: 0;
+}
+.accbar__name {
+  font-size: 30rpx;
+  font-weight: 600;
+}
+.accbar__sub {
+  font-size: 23rpx;
+  color: var(--txt3);
+  margin-top: 4rpx;
+}
+.accbar__btn {
+  font-size: 25rpx;
+  color: var(--primary);
+  border: 1rpx solid var(--primary);
+  border-radius: var(--r-pill);
+  padding: 6rpx 20rpx;
+  flex: none;
+}
+
+/* ── 查看范围分段控件 ───────────────────────────────── */
+.seg {
+  display: flex;
+  background: var(--bg2);
+  border-radius: var(--r-pill);
+  padding: 6rpx;
+  margin-bottom: 20rpx;
+}
+.seg__i {
+  flex: 1;
+  text-align: center;
+  font-size: 25rpx;
+  color: var(--txt2);
+  padding: 12rpx 0;
+  border-radius: var(--r-pill);
+  transition: background var(--t) var(--ease), color var(--t) var(--ease);
+}
+.seg__i--on {
+  background: var(--card);
+  color: var(--txt);
+  font-weight: 600;
+  box-shadow: var(--sh-1);
+}
+
+.tabs {
+  display: flex;
+  background: var(--card);
+  border: 1rpx solid var(--line);
+  border-radius: var(--radius);
+  padding: 8rpx;
+  margin-bottom: 24rpx;
+}
+.tabs__i {
+  flex: 1;
+  text-align: center;
+  font-size: 27rpx;
+  color: var(--txt2);
+  padding: 16rpx 0;
+  border-radius: 12rpx;
+  transition: background var(--t) var(--ease), color var(--t) var(--ease);
+}
+.tabs__i--on {
+  background: var(--primary-soft);
+  color: var(--primary);
+  font-weight: 600;
+}
+
+/* ── 批量 / 单独 筛选条 ─────────────────────────────── */
+.fbar {
+  display: flex;
+  gap: 14rpx;
+  margin-bottom: 24rpx;
+}
+.fchip {
+  flex: 1;
+  text-align: center;
+  font-size: 26rpx;
+  color: var(--txt2);
+  background: var(--card);
+  border: 1rpx solid var(--line2);
+  border-radius: var(--r-pill);
+  padding: 14rpx 0;
+  transition: background var(--t) var(--ease), color var(--t) var(--ease),
+    border-color var(--t) var(--ease);
+}
+.fchip--on {
+  background: var(--primary-soft);
+  border-color: var(--primary);
+  color: var(--primary);
+  font-weight: 600;
+}
+/* ── 日期选择器：触发按钮 + 日历弹层 ─────────────────────────
+   替换原来的横向日期条：21 个芯片桌面端滚轮滚不动、手机上要滑很久，
+   而且只能选「已取到记录里出现过的日期」——用户反馈「不能筛选日期」。
+   现在和网页端「火花守护」App 的 .dsel/.cal 完全同一套 UI：
+   点触发按钮弹出整月日历，有记录的日期带橙点、今天橙字、选中实心橙，
+   上下月翻页 + 「今天 / 全部日期」两个快捷动作，任意日期都能选。 */
+.dsel {
+  display: flex;
+  align-items: center;
+  gap: 14rpx;
+  margin: 16rpx 0 8rpx;
+  padding: 16rpx 28rpx;
+  border-radius: var(--r-pill);
+  border: 1rpx solid var(--line2);
+  background: var(--card);
+  font-size: 26rpx;
+  color: var(--txt2);
+  transition: background var(--t) var(--ease), border-color var(--t) var(--ease), color var(--t) var(--ease);
+}
+.dsel--on {
+  background: var(--primary-soft);
+  border-color: var(--primary);
+  color: var(--primary);
+  font-weight: 600;
+}
+.dsel__ic { font-size: 30rpx; }
+.dsel__t { flex: 1; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.dsel__arrow { font-size: 20rpx; opacity: .75; }
+
+.calMask {
+  position: fixed;
+  left: 0; right: 0; top: 0; bottom: 0;
+  z-index: 140;
+  background: rgba(8, 11, 18, .68);
+}
+.cal {
+  position: fixed;
+  left: 24rpx; right: 24rpx; bottom: 0;
+  z-index: 141;
+  background: var(--card-3);
+  border: 1rpx solid var(--line2);
+  border-bottom: none;
+  border-radius: 36rpx 36rpx 0 0;
+  box-shadow: var(--sh-1);
+  padding: 28rpx 24rpx calc(28rpx + env(safe-area-inset-bottom));
+}
+.cal__hd { display: flex; align-items: center; gap: 12rpx; margin-bottom: 16rpx; }
+.cal__nav {
+  width: 56rpx; height: 56rpx;
+  display: flex; align-items: center; justify-content: center;
+  border: 1rpx solid var(--line); border-radius: 18rpx;
+  font-size: 34rpx; color: var(--txt2); line-height: 1;
+}
+.cal__ym { flex: 1; text-align: center; font-size: 28rpx; font-weight: 600; color: var(--txt); }
+.cal__wk { display: flex; margin-bottom: 8rpx; }
+.cal__wk text { flex: 1; text-align: center; font-size: 22rpx; color: var(--txt3); }
+.cal__grid { display: flex; flex-wrap: wrap; }
+.cal__d {
+  position: relative;
+  width: 14.2857%;
+  height: 76rpx;
+  display: flex; flex-direction: column; align-items: center; justify-content: center;
+  border-radius: 20rpx;
+}
+.cal__d--empty { pointer-events: none; }
+.cal__n { font-size: 26rpx; color: var(--txt); line-height: 1; }
+/* 有记录的日期：数字下一颗橙点 */
+.cal__dot { position: absolute; bottom: 12rpx; width: 8rpx; height: 8rpx; border-radius: 50%; background: var(--primary); }
+.cal__d.has .cal__n { font-weight: 600; }
+.cal__d.today .cal__n { color: var(--primary); font-weight: 700; }
+.cal__d.on { background: var(--primary); }
+.cal__d.on .cal__n { color: #fff; font-weight: 700; }
+.cal__d.on .cal__dot { background: #fff; }
+.cal__ft { display: flex; gap: 16rpx; margin-top: 20rpx; padding-top: 20rpx; border-top: 1rpx solid var(--line); }
+.cal__btn {
+  flex: 1; text-align: center; font-size: 25rpx; color: var(--txt2);
+  background: var(--card); border: 1rpx solid var(--line2); border-radius: var(--r-pill);
+  padding: 16rpx 0;
+}
+.cal__btn--on { color: var(--primary); border-color: var(--primary); }
+
+.errbox {
+  background: var(--danger-soft);
+  color: var(--danger);
+  font-size: 25rpx;
+  padding: 20rpx 24rpx;
+  border-radius: 12rpx;
+  margin-bottom: 24rpx;
+}
+
+.ritem {
+  display: flex;
+  align-items: flex-start;
+  padding: 20rpx 0;
+  border-bottom: 1rpx solid var(--line);
+}
+.ritem:last-child {
+  border-bottom: none;
+  padding-bottom: 0;
+}
+.ritem__time {
+  font-size: 24rpx;
+  color: var(--txt3);
+  flex: none;
+  width: 84rpx;
+  padding-top: 2rpx;
+}
+.ritem__mid {
+  flex: 1;
+  min-width: 0;
+  margin: 0 16rpx;
+}
+/* 第一行：类型标签 + 账号标签 + 目标 */
+.ritem__t {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 8rpx;
+}
+.kindtag {
+  flex: none;
+  font-size: 21rpx;
+  line-height: 1.5;
+  padding: 0 12rpx;
+  border-radius: var(--r-xs);
+  font-weight: 600;
+}
+.kindtag--batch {
+  background: var(--primary-soft);
+  color: var(--primary);
+}
+.kindtag--single {
+  background: var(--warn-soft);
+  color: var(--warn);
+}
+.acctag {
+  flex: none;
+  font-size: 21rpx;
+  line-height: 1.5;
+  padding: 0 12rpx;
+  border-radius: var(--r-xs);
+  background: var(--card-2);
+  color: var(--txt2);
+}
+.ritem__name {
+  font-size: 26rpx;
+  color: var(--txt);
+  font-weight: 500;
+}
+.ritem__s {
+  font-size: 23rpx;
+  color: var(--txt3);
+  margin-top: 6rpx;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+}
+
+/* ── 运行日志：自带滚动的容器 ─────────────────────────
+   之前是 .logtext 直接 max-height:900rpx + overflow:hidden，
+   超出部分被裁掉、也滑不动；现在外层 scroll-view 负责滚。 */
+.logbox {
+  background: var(--card-2);
+  border: 1rpx solid var(--line);
+  border-radius: 12rpx;
+  padding: 16rpx 18rpx;
+}
+/* scroll-into-view 的落点：贴在最末尾，用来把日志顶到底部 */
+.logend {
+  height: 2rpx;
+}
+.logtext {
+  display: block;
+  font-family: 'SF Mono', Menlo, Consolas, monospace;
+  font-size: 21rpx;
+  line-height: 1.7;
+  color: var(--txt2);
+  word-break: break-all;
+  white-space: pre-wrap;
+}
+.loghint {
+  font-size: 21rpx;
+  color: var(--txt3);
+  text-align: center;
+  margin-top: 14rpx;
+}
+
+/* ════════════════════════════════════════════════════════
+   [20261014] 记录详情弹窗（点列表任意一条弹出）
+   ════════════════════════════════════════════════════════ */
+.mask {
+  position: fixed;
+  left: 0;
+  right: 0;
+  top: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.62);
+  z-index: 900;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 40rpx;
+}
+.dialog {
+  width: 100%;
+  max-height: 84vh;
+  overflow-y: auto;
+  background: var(--card);
+  border: 1rpx solid var(--line);
+  border-radius: 24rpx;
+  padding: 40rpx 32rpx 32rpx;
+}
+.dialog__title {
+  font-size: 32rpx;
+  font-weight: 700;
+  text-align: center;
+  margin-bottom: 30rpx;
+}
+.dialog__ops {
+  display: flex;
+  gap: 16rpx;
+  margin-top: 28rpx;
+}
+.dialog__ops .btn {
+  flex: 1;
+}
+
+/* 详情行：左标签右值 */
+.drow {
+  display: flex;
+  align-items: flex-start;
+  padding: 14rpx 0;
+  border-bottom: 1rpx solid var(--line);
+}
+.drow__k {
+  width: 110rpx;
+  flex: none;
+  font-size: 25rpx;
+  color: var(--txt3);
+}
+.drow__v {
+  flex: 1;
+  min-width: 0;
+  font-size: 26rpx;
+  text-align: right;
+  word-break: break-all;
+}
+
+/* 消息全文：整段可选，长消息自动换行不被裁 */
+.dmsg {
+  margin-top: 20rpx;
+  background: var(--card-3);
+  border: 1rpx solid var(--line);
+  border-radius: 14rpx;
+  padding: 22rpx 24rpx;
+}
+.dmsg__t {
+  font-size: 23rpx;
+  color: var(--txt3);
+  margin-bottom: 10rpx;
+}
+.dmsg__c {
+  font-size: 26rpx;
+  line-height: 1.6;
+  color: var(--txt);
+  white-space: pre-wrap;
+  word-break: break-all;
+}

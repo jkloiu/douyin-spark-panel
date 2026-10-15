@@ -1,0 +1,108 @@
+<view class="page page--tab stagger">
+  <!-- 用户卡 -->
+  <view class="ucard">
+    <!-- 头像位：[20261014] 微信头像授权。透明 button 盖在最上层，微信只认
+         button 的 open-type，所以视觉上就是「点自己的头像换头像」。 -->
+    <view class="ucard__avwrap">
+      <image wx:if="{{avatar}}" class="ucard__avimg" src="{{avatar}}" mode="aspectFill" />
+      <view wx:else class="ucard__av">{{initial}}</view>
+      <view wx:if="{{avatarBusy}}" class="ucard__avbusy"></view>
+      <button
+        class="ucard__avbtn"
+        open-type="chooseAvatar"
+        bind:chooseavatar="onChooseAvatar"
+      ></button>
+    </view>
+    <view class="ucard__mid">
+      <view class="ucard__name">
+        {{username || '未登录'}}
+        <text wx:if="{{isAdmin}}" class="ucaard__role">管理员</text>
+      </view>
+      <view class="ucard__sub">绑定 {{accList.length}} 个抖音账号</view>
+      <view class="ucard__hint">点头像可用微信头像</view>
+    </view>
+  </view>
+
+  <!-- 功能组 -->
+  <view class="card menu">
+    <view class="menu__i tap-row" bindtap="goDaily">
+      <text class="menu__e">📊</text>
+      <text class="menu__t">日报</text>
+      <text class="menu__a">›</text>
+    </view>
+    <view class="menu__i tap-row" bindtap="goContacts">
+      <text class="menu__e">👥</text>
+      <text class="menu__t">抓取联系人</text>
+      <text class="menu__a">›</text>
+    </view>
+    <view class="menu__i tap-row" bindtap="goAccounts">
+      <text class="menu__e">🔑</text>
+      <text class="menu__t">账号管理</text>
+      <text class="menu__a">›</text>
+    </view>
+    <view class="menu__i tap-row" bindtap="goTasks">
+      <text class="menu__e">⏰</text>
+      <text class="menu__t">定时任务</text>
+      <text class="menu__a">›</text>
+    </view>
+  </view>
+
+  <view class="card menu">
+    <view class="menu__i tap-row" bindtap="goNotif">
+      <text class="menu__e">🔔</text>
+      <view class="menu__mid">
+        <text class="menu__t">通知中心</text>
+        <text wx:if="{{notifUnread}}" class="menu__sub">{{notifUnread}} 条未读{{notifBad ? ' · ' + notifBad + ' 条异常' : ''}}</text>
+        <text wx:else class="menu__sub">暂无未读</text>
+      </view>
+      <text wx:if="{{notifCount}}" class="menu__badge live-dot">{{notifCount > 99 ? '99+' : notifCount}}</text>
+      <text class="menu__a">›</text>
+    </view>
+    <view class="menu__i tap-row" bindtap="goPush">
+      <text class="menu__e">📮</text>
+      <view class="menu__mid">
+        <text class="menu__t">推送设置</text>
+        <text class="menu__sub">微信服务通知 / 第三方通道</text>
+      </view>
+      <text class="menu__a">›</text>
+    </view>
+    <view wx:if="{{isAdmin}}" class="menu__i" bindtap="goUsers">
+      <text class="menu__e">🧑‍🤝‍🧑</text>
+      <text class="menu__t">面板用户管理</text>
+      <text class="menu__a">›</text>
+    </view>
+    <view class="menu__i tap-row" bindtap="checkConsistency">
+      <text class="menu__e">🔍</text>
+      <text class="menu__t">好友/名单一致性检查</text>
+      <text wx:if="{{checking}}" class="menu__a">检查中…</text>
+      <text wx:else class="menu__a">›</text>
+    </view>
+  </view>
+
+  <view class="card menu">
+    <view class="menu__i tap-row" bindtap="goSysStatus">
+      <text class="menu__e">🩺</text>
+      <view class="menu__mid">
+        <text class="menu__t">系统状态</text>
+        <text class="menu__sub">浏览器锁 / 运行中的任务 / 下次执行</text>
+      </view>
+      <text class="menu__a">›</text>
+    </view>
+    <view class="menu__i tap-row" bindtap="changePassword">
+      <text class="menu__e">🔒</text>
+      <text class="menu__t">修改密码</text>
+      <text class="menu__a">›</text>
+    </view>
+    <view class="menu__i tap-row" bindtap="copyVersion">
+      <text class="menu__e">ℹ️</text>
+      <text class="menu__t">版本</text>
+      <text class="menu__a">v{{version}}</text>
+    </view>
+  </view>
+
+  <button class="btn btn--danger btn--block" bindtap="logout">退出登录</button>
+
+  <view class="footnote">
+    抖音自动化在服务器上运行，小程序只做查看与轻量操作。
+  </view>
+</view>

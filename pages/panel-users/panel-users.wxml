@@ -1,0 +1,93 @@
+<view class="page stagger">
+  <view class="card">
+    <view class="card__head">
+      <text class="card__title">面板用户</text>
+      <text class="card__sub">共 {{users.length}} 人</text>
+    </view>
+    <view class="hintbox">
+      每个面板用户只能看到自己名下的抖音账号数据。分配账号后，该用户在小程序里就是独立的一张表。
+    </view>
+    <button class="btn btn--primary btn--block" bindtap="openAdd">+ 新建用户</button>
+  </view>
+
+  <view wx:if="{{err}}" class="errbox">{{err}}</view>
+
+  <view wx:if="{{loading}}" class="card">
+    <view class="skeleton" style="width: 100%; height: 160rpx; margin-bottom: 20rpx"></view>
+    <view class="skeleton" style="width: 100%; height: 160rpx"></view>
+  </view>
+
+  <block wx:else>
+    <view wx:for="{{users}}" wx:key="username" class="card">
+      <view class="ucard__head">
+        <view class="ucard__id">
+          <view class="ucard__av">
+            <image wx:if="{{item.avatar}}" class="ucard__avimg" src="{{item.avatar}}" mode="aspectFill" />
+            <text wx:else class="ucard__avtx">{{item.initial}}</text>
+          </view>
+          <text class="ucard__name">{{item.username}}</text>
+          <text wx:if="{{item.isAdmin}}" class="badge badge--primary ucard__role">管理员</text>
+        </view>
+        <text class="badge">{{item.notifyText}}</text>
+      </view>
+      <view class="ucard__row">
+        <text class="ucard__k">绑定账号</text>
+        <text class="ucard__v mono">{{item.accountText}}</text>
+      </view>
+      <view class="ucard__ops">
+        <button class="btn btn--sm" data-u="{{item.username}}" bindtap="openEdit">编辑分配</button>
+        <button
+          wx:if="{{!item.isAdmin}}"
+          class="btn btn--sm btn--danger"
+          data-u="{{item.username}}"
+          bindtap="del"
+        >
+          删除
+        </button>
+      </view>
+    </view>
+  </block>
+</view>
+
+<!-- 新建 / 编辑弹窗 -->
+<view wx:if="{{showForm}}" class="mask" bindtap="closeForm">
+  <view class="dialog anim--pop" catchtap="noop">
+    <view class="dialog__title">{{formMode === 'add' ? '新建面板用户' : '编辑 ' + formUser}}</view>
+
+    <view class="field">
+      <text class="field__label">用户名</text>
+      <input
+        class="field__input"
+        value="{{formUser}}"
+        bindinput="onUser"
+        disabled="{{formMode === 'edit'}}"
+        placeholder="英文或数字"
+      />
+    </view>
+
+    <view class="field">
+      <text class="field__label">{{formMode === 'add' ? '密码' : '新密码（留空不改）'}}</text>
+      <input class="field__input" password value="{{formPwd}}" bindinput="onPwd" placeholder="至少 6 位" />
+    </view>
+
+    <view class="field">
+      <text class="field__label">分配抖音账号</text>
+      <view wx:if="{{!formAccounts.length}}" class="empty small">还没有已添加的抖音账号</view>
+      <view
+        wx:for="{{formAccounts}}"
+        wx:key="uid"
+        class="uidrow {{item.checked ? 'uidrow--on' : ''}}"
+        data-uid="{{item.uid}}"
+        bindtap="toggleUid"
+      >
+        <text class="uidrow__c">{{item.checked ? '✓' : ''}}</text>
+        <text class="uidrow__t">{{item.label}}</text>
+      </view>
+    </view>
+
+    <view class="dialog__ops">
+      <button class="btn btn--ghost" bindtap="closeForm">取消</button>
+      <button class="btn btn--primary" bindtap="submitForm" loading="{{busy === 'form'}}">保存</button>
+    </view>
+  </view>
+</view>

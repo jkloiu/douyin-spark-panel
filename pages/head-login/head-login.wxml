@@ -1,0 +1,59 @@
+<view class="page stagger">
+  <view class="card">
+    <view class="card__head">
+      <text class="card__title">短信登录</text>
+      <text class="card__sub mono">{{uid}}</text>
+    </view>
+
+    <block wx:if="{{!started}}">
+      <view class="field">
+        <text class="field__label">抖音绑定的手机号</text>
+        <input
+          class="field__input"
+          type="number"
+          maxlength="13"
+          value="{{phone}}"
+          bindinput="onPhone"
+          placeholder="11 位手机号"
+        />
+        <view class="field__hint">服务器会用它自动填号并点击「获取验证码」，你把收到的验证码填回来即可。</view>
+      </view>
+      <button class="btn btn--primary btn--block" bindtap="sendCode" loading="{{busy}}">获取验证码</button>
+    </block>
+
+    <block wx:else>
+      <view class="statusline">
+        <text class="badge {{status === 'success' ? 'badge--ok' : (status === 'error' || status === 'timeout' ? 'badge--danger' : 'badge--primary')}}">
+          {{statusText}}
+        </text>
+      </view>
+      <view wx:if="{{message}}" class="msgbox">{{message}}</view>
+
+      <view wx:if="{{!canInputCode && status !== 'success' && status !== 'error' && status !== 'timeout' && status !== 'cancelled'}}" class="waitbox">
+        服务器正在准备登录页（实测需要 1~2 分钟）。<text class="waitbox__b">就绪前请先不要输入验证码</text>，收到的短信本页会自动提示。
+      </view>
+
+      <view class="field">
+        <text class="field__label">短信验证码</text>
+        <input
+          class="field__input codeinput"
+          type="number"
+          maxlength="8"
+          value="{{code}}"
+          bindinput="onCode"
+          disabled="{{!canInputCode || submitting}}"
+          placeholder="{{canInputCode ? '收到的 6 位数字' : '等待服务器就绪…'}}"
+        />
+      </view>
+      <button class="btn btn--primary btn--block" bindtap="submitCode" loading="{{submitting}}" disabled="{{!canInputCode}}">提交验证码</button>
+      <button class="btn btn--ghost btn--block relogin" bindtap="restart">重新发起</button>
+      <button class="btn btn--danger btn--block relogin" bindtap="cancelLogin">取消登录</button>
+    </block>
+
+    <view wx:if="{{err}}" class="errbox">{{err}}</view>
+  </view>
+
+  <view class="tipcard">
+    服务器会在后台打开一个真实浏览器完成登录，全程约 1~2 分钟；期间请不要同时执行其它自动化任务。中途放弃可点「取消登录」立即释放服务器。
+  </view>
+</view>

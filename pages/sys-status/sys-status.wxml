@@ -1,0 +1,114 @@
+<!-- 注意：.stagger 的直接子元素只能是 view / button（见 app.wxss 的说明），
+     这里全部用 view 包裹，不新增标签类型。 -->
+<view class="page stagger">
+  <view wx:if="{{err}}" class="errbox">{{err}}</view>
+
+  <!-- 面板服务 -->
+  <view class="card">
+    <view class="card__head">
+      <text class="card__title">面板服务</text>
+      <text class="badge {{alive ? 'badge--ok' : 'badge--danger'}}">{{alive ? '正常' : '拿不到状态'}}</text>
+    </view>
+    <view class="drow">
+      <text class="drow__k">服务器时间</text>
+      <text class="drow__v">{{now || '—'}}</text>
+    </view>
+    <view class="drow">
+      <text class="drow__k">磁盘</text>
+      <text class="drow__v small">{{disk || '—'}}</text>
+    </view>
+    <view class="drow">
+      <text class="drow__k">访问令牌</text>
+      <text class="drow__v {{tokenSet ? '' : 'drow__v--bad'}}">{{tokenSet ? '已设置' : '未设置'}}</text>
+    </view>
+    <view wx:if="{{!alive && !err}}" class="hint">拿不到面板状态，可能是服务未启动或网络不通。</view>
+  </view>
+
+  <!-- 浏览器锁 -->
+  <view class="card">
+    <view class="card__head">
+      <text class="card__title">浏览器锁</text>
+      <text class="badge {{lockCls}}">{{lockText}}</text>
+    </view>
+
+    <block wx:if="{{lock && lock.held}}">
+      <view class="drow">
+        <text class="drow__k">占用者</text>
+        <text class="drow__v">{{lockOwnerLabel}}</text>
+      </view>
+      <view class="drow">
+        <text class="drow__k">已占用</text>
+        <text class="drow__v">{{lock.ageStr || '—'}}</text>
+      </view>
+      <view class="drow">
+        <text class="drow__k">自动保护剩余</text>
+        <text class="drow__v {{lockLow ? 'drow__v--bad' : ''}}">{{lock.remainStr || '—'}}</text>
+      </view>
+      <view class="hint">占用期间其它自动化任务只能排队等待。超过 {{maxHoldText}} 未释放会自我保护退出。</view>
+    </block>
+
+    <block wx:elif="{{lock && lock.stale}}">
+      <view class="drow">
+        <text class="drow__k">残留记录</text>
+        <text class="drow__v small">{{lock.owner}}</text>
+      </view>
+      <view class="hint">持有者进程已退出，锁实际已释放，只是锁文件里留了旧记录，不影响新任务启动。</view>
+    </block>
+
+    <view wx:else class="hint">当前没有任务占用浏览器，自动化可以随时启动。</view>
+  </view>
+
+  <!-- 正在运行 -->
+  <view class="card">
+    <view class="card__head">
+      <text class="card__title">正在运行</text>
+      <text class="card__sub">{{anyRunning ? '有任务在跑' : '全部空闲'}}</text>
+    </view>
+    <view wx:for="{{running}}" wx:key="key" class="rrow">
+      <view class="rrow__l">
+        <text class="rrow__n">{{item.label}}</text>
+        <text class="rrow__s">{{item.sub}}</text>
+      </view>
+      <view
+        wx:if="{{item.running}}"
+        class="rrow__btn tap-s {{busy === item.key ? 'rrow__btn--off' : ''}}"
+        data-k="{{item.key}}"
+        bindtap="stopRun"
+      >{{busy === item.key ? '停止中…' : '停止'}}</view>
+      <text wx:else class="rrow__idle">—</text>
+    </view>
+  </view>
+
+  <!-- 下次自动执行 -->
+  <view wx:if="{{next}}" class="card">
+    <view class="card__head">
+      <text class="card__title">下次自动执行</text>
+      <text class="card__sub">服务器时区</text>
+    </view>
+    <view class="drow">
+      <text class="drow__k">批量续火花</text>
+      <text class="drow__v">{{next.main || '—'}}</text>
+    </view>
+    <view class="drow">
+      <text class="drow__k">定时任务</text>
+      <text class="drow__v">{{next.custom || '—'}}</text>
+    </view>
+    <view wx:if="{{next.custom_window}}" class="drow">
+      <text class="drow__k">执行时间窗</text>
+      <text class="drow__v small">{{next.custom_window}}</text>
+    </view>
+  </view>
+
+  <!-- crontab：仅管理员可见（口径与面板一致） -->
+  <view wx:if="{{isAdmin && crontab}}" class="card">
+    <view class="card__head">
+      <text class="card__title">系统 crontab</text>
+      <text class="card__sub">管理员可见</text>
+    </view>
+    <view class="cron">{{crontab}}</view>
+  </view>
+
+  <view class="footnote">
+    <text wx:if="{{updatedAt}}">更新于 {{updatedAt}}　</text>下拉可刷新
+  </view>
+</view>

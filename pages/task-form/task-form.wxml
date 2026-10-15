@@ -1,0 +1,120 @@
+<view class="page stagger">
+  <view wx:if="{{loading}}" class="card">
+    <view class="skeleton" style="width: 100%; height: 400rpx"></view>
+  </view>
+
+  <view wx:elif="{{err}}" class="card">
+    <view class="empty">{{err}}</view>
+  </view>
+
+  <block wx:else>
+    <view class="card">
+      <view class="card__head">
+        <text class="card__title">{{isEdit ? '编辑定时任务' : '新建定时任务'}}</text>
+      </view>
+
+      <!-- 类型 -->
+      <view class="field">
+        <text class="field__label">任务类型</text>
+        <picker
+          mode="selector"
+          range="{{typeLabels}}"
+          value="{{typeIdx}}"
+          bindchange="onType"
+        >
+          <view class="field__picker">
+            <text>{{typeLabels[typeIdx]}}</text>
+            <text class="muted small">切换 ›</text>
+          </view>
+        </picker>
+      </view>
+
+      <!-- 目标（仅单独续） -->
+      <view wx:if="{{type === 'custom'}}" class="field">
+        <text class="field__label">发送目标</text>
+        <picker
+          wx:if="{{friends.length}}"
+          mode="selector"
+          range="{{friendLabels}}"
+          value="{{friendIdx < 0 ? 0 : friendIdx}}"
+          bindchange="onFriend"
+        >
+          <view class="field__picker">
+            <text>{{friendIdx >= 0 ? friendLabels[friendIdx] : '请选择好友'}}</text>
+            <text class="muted small">选择 ›</text>
+          </view>
+        </picker>
+        <view wx:else class="field__hint">当前账号还没有好友，先去「抓取联系人」加几个。</view>
+      </view>
+
+      <!-- 时间 -->
+      <view class="field">
+        <text class="field__label">每天执行时间</text>
+        <picker mode="time" value="{{time}}" bindchange="onTime">
+          <view class="field__picker">
+            <text>{{time}}</text>
+            <text class="muted small">选择 ›</text>
+          </view>
+        </picker>
+      </view>
+
+      <!-- 随机延迟 -->
+      <view class="field">
+        <text class="field__label">随机延迟（分钟，可留空）</text>
+        <input class="field__input" type="number" value="{{delay}}" bindinput="onDelay" placeholder="0" />
+        <view class="field__hint">在这段时间内随机选一个时刻执行，避免每天同一秒发送。</view>
+      </view>
+
+      <!-- 描述 -->
+      <view class="field">
+        <text class="field__label">任务备注</text>
+        <input class="field__input" value="{{description}}" bindinput="onDesc" placeholder="留空自动生成" />
+      </view>
+
+      <!-- 启用 -->
+      <view class="switchrow">
+        <text class="switchrow__t">创建后立即启用</text>
+        <switch checked="{{enabled}}" bindchange="onEnabled" color="#ff7a45" />
+      </view>
+    </view>
+
+    <!-- 消息内容 -->
+    <view class="card">
+      <view class="card__head">
+        <text class="card__title">发送内容</text>
+      </view>
+
+      <view class="field">
+        <text class="field__label">文案模式</text>
+        <picker
+          mode="selector"
+          range="{{msgModeLabels}}"
+          value="{{msgModeIdx}}"
+          bindchange="onMsgMode"
+        >
+          <view class="field__picker">
+            <text>{{msgModeLabels[msgModeIdx]}}</text>
+            <text class="muted small">切换 ›</text>
+          </view>
+        </picker>
+      </view>
+
+      <view wx:if="{{msgMode === 'custom'}}" class="field">
+        <text class="field__label">自定义内容</text>
+        <textarea
+          class="textarea"
+          value="{{msg}}"
+          bindinput="onMsg"
+          maxlength="500"
+          placeholder="每次发送这句话"
+          auto-height
+        />
+        <view class="field__hint">建议带「今日火花」类关键词，避免被判为骚扰。</view>
+      </view>
+    </view>
+
+    <button class="btn btn--primary btn--block" bindtap="submit" loading="{{saving}}">
+      {{isEdit ? '保存修改' : '创建任务'}}
+    </button>
+  </block>
+</view>

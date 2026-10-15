@@ -1,0 +1,171 @@
+<view class="page stagger">
+  <!-- 当前到底在用哪条通道（避免「配过什么自己都不记得」） -->
+  <view class="nowcard">
+    <text class="nowcard__k">当前推送方式</text>
+    <text class="nowcard__v">{{nowText}}</text>
+  </view>
+
+  <!-- ============ 通道一：微信服务通知（推荐） ============ -->
+  <view class="hero">
+    <view class="hero__head">
+      <text class="hero__num">1</text>
+      <text class="hero__t">微信服务通知</text>
+      <text class="hero__tag">推荐</text>
+    </view>
+    <view class="hero__sub">微信自带 · 不用第三方 · 不用关注公众号</view>
+
+    <view class="hero__body">
+      <view class="krow">
+        <text class="krow__k">状态</text>
+        <text class="krow__v {{sub.enabled ? 'krow__v--ok' : ''}}">
+          {{!sub.configured ? '未配置模板' : (sub.enabled ? '已开启' : '未开启')}}
+        </text>
+      </view>
+      <view class="krow">
+        <text class="krow__k">推送时间</text>
+        <text class="krow__v">{{slotsText}}（日报生成后）</text>
+      </view>
+      <view class="krow">
+        <text class="krow__k">剩余可接收</text>
+        <text class="krow__v">{{sub.grants}} 条</text>
+      </view>
+      <view class="krow" wx:if="{{subLastText}}">
+        <text class="krow__k">上次推送</text>
+        <text class="krow__v">{{subLastText}}</text>
+      </view>
+      <view class="krow" wx:if="{{sub.lastTitle}}">
+        <text class="krow__k">上次主文案</text>
+        <text class="krow__v">{{sub.lastTitle}}</text>
+      </view>
+      <view class="krow" wx:if="{{sub.lastDetail}}">
+        <text class="krow__k">上次明细</text>
+        <text class="krow__v">{{sub.lastDetail}}</text>
+      </view>
+    </view>
+
+    <view wx:if="{{!sub.configured}}" class="notice notice--warn" bindtap="showHowto">
+      还没有配置订阅消息模板 ID · 点这里看怎么申请 ›
+    </view>
+    <view wx:elif="{{sub.needRenew}}" class="notice notice--warn">
+      额度已用完，点一次「补充额度」即可恢复推送。
+    </view>
+    <view wx:if="{{sub.lastErr}}" class="notice notice--danger">{{sub.lastErr}}</view>
+
+    <view class="ops">
+      <button class="btn btn--primary" bindtap="onSubscribe" loading="{{subBusy}}">
+        {{sub.enabled ? '补充额度 +1' : '开启'}}
+      </button>
+      <button class="btn" bindtap="onSubTest" loading="{{subTesting}}" disabled="{{!sub.enabled}}">发测试</button>
+    </view>
+    <view class="ops">
+      <button class="btn btn--ghost" bindtap="onSubCheck">预览下次推送</button>
+      <button wx:if="{{sub.enabled}}" class="btn btn--ghost" bindtap="onSubOff">关闭服务通知</button>
+    </view>
+
+    <view class="hero__tip">
+      一次授权 = 可收 1 条。微信在你勾选「总是保持以上选择」后就不再弹窗了 ——
+      那不是没生效，点一次照样加一条，连点几次就能攒够。
+    </view>
+  </view>
+
+  <!-- ============ 通道二：第三方通道（一行一条） ============ -->
+  <view class="card">
+    <view class="card__head">
+      <view class="card__l">
+        <text class="card__title"><text class="hero__num hero__num--sm">2</text>第三方通道</text>
+        <text class="card__sum">{{thirdSum}}</text>
+      </view>
+      <view class="head-r">
+        <view class="addbtn tap-s" bindtap="openAdd">＋ 增加</view>
+      </view>
+    </view>
+
+    <view wx:if="{{loading}}" class="skeleton" style="width: 100%; height: 120rpx"></view>
+
+    <block wx:else>
+      <view wx:if="{{!chList.length}}" class="chempty">
+        还没添加通道。不需要可以不加，微信服务通知单独就能用。
+      </view>
+
+      <view
+        wx:for="{{chList}}"
+        wx:key="id"
+        class="chrow tap-row"
+        data-i="{{index}}"
+        bindtap="openEdit"
+      >
+        <view class="chrow__ic chrow__ic--{{item.channel}}">{{item.initial}}</view>
+        <view class="chrow__mid">
+          <view class="chrow__t">
+            <text class="chrow__name">{{item.label}}</text>
+            <text class="chipx {{item.enabled ? 'chipx--on' : 'chipx--off'}}">{{item.enabled ? '已启用' : '已停用'}}</text>
+            <text wx:if="{{item.daily}}" class="chipx chipx--daily">日报</text>
+          </view>
+          <view class="chrow__s">{{item.summary}}</view>
+        </view>
+        <view class="chev"></view>
+      </view>
+    </block>
+
+    <view wx:if="{{err}}" class="errbox">{{err}}</view>
+  </view>
+
+  <!-- ============ 增加 / 编辑弹窗（增删改查都在这） ============ -->
+  <view wx:if="{{sheet}}" class="mask" bindtap="closeSheet">
+    <view class="dialog anim--pop" catchtap="noop">
+      <view class="dialog__title">{{editing ? '编辑通道' : '增加第三方通道'}}</view>
+
+      <view class="field">
+        <text class="field__label">推送渠道</text>
+        <picker mode="selector" range="{{optLabels}}" value="{{fIdx}}" bindchange="onFormChannel">
+          <view class="field__picker">
+            <text>{{optLabels[fIdx] || '关闭'}}</text>
+            <text class="muted small">切换 ›</text>
+          </view>
+        </picker>
+      </view>
+
+      <view class="field">
+        <text class="field__label">Token / 密钥</text>
+        <input
+          class="field__input"
+          value="{{fToken}}"
+          bindinput="onFormToken"
+          placeholder="{{fTokenHint}}"
+        />
+      </view>
+
+      <view class="field">
+        <text class="field__label">接收地址（{{fAddrLabel}}）</text>
+        <input
+          class="field__input"
+          value="{{fWebhook}}"
+          bindinput="onFormWebhook"
+          placeholder="{{fWebhookHint}}"
+        />
+      </view>
+
+      <view class="switchrow">
+        <text class="switchrow__t">启用这条通道</text>
+        <switch checked="{{fEnabled}}" bindchange="onFormEnabled" color="#ff7a45" />
+      </view>
+      <view class="switchrow">
+        <text class="switchrow__t">接收每日日报</text>
+        <switch checked="{{fDaily}}" bindchange="onFormDaily" color="#ff7a45" />
+      </view>
+
+      <view class="dialog__ops">
+        <button class="btn btn--ghost" bindtap="closeSheet">取消</button>
+        <button class="btn btn--primary" bindtap="saveRow" loading="{{busy === 'save'}}">
+          {{editing ? '保存' : '增加'}}
+        </button>
+      </view>
+      <view wx:if="{{editing}}" class="dialog__ops">
+        <button class="btn btn--sm" bindtap="testRow" loading="{{busy === 'test'}}">发送测试</button>
+        <button class="btn btn--sm btn--danger" bindtap="removeRow" loading="{{busy === 'del'}}">删除</button>
+      </view>
+
+      <view class="dialog__hint tap" bindtap="copyTip">Token / 接收地址在哪拿？点这里复制说明</view>
+    </view>
+  </view>
+</view>

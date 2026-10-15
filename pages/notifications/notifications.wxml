@@ -1,0 +1,81 @@
+<view class="page stagger">
+  <view class="card">
+    <view class="card__head">
+      <text class="card__title">通知中心</text>
+      <view class="heads">
+        <text class="card__sub" bindtap="onMarkRead">全部已读</text>
+        <text class="card__sub card__sub--danger" bindtap="clearAll">清空</text>
+      </view>
+    </view>
+
+    <view class="statline">
+      <text class="statline__i">共 {{list.length}} 条</text>
+      <text class="statline__i {{newCount ? 'statline__i--on' : ''}}">未读 {{newCount}}</text>
+      <text class="statline__i {{badCount ? 'statline__i--bad' : ''}}">异常 {{badCount}}</text>
+    </view>
+
+    <view class="filters">
+      <view class="filters__i tap-s {{filter === 'all' ? 'filters__i--on' : ''}}" data-f="all" bindtap="onFilter">全部</view>
+      <view class="filters__i tap-s {{filter === 'new' ? 'filters__i--on' : ''}}" data-f="new" bindtap="onFilter">仅未读</view>
+      <view class="filters__i tap-s {{filter === 'bad' ? 'filters__i--on' : ''}}" data-f="bad" bindtap="onFilter">仅异常</view>
+      <view class="filters__i tap-s {{filter === 'ok' ? 'filters__i--on' : ''}}" data-f="ok" bindtap="onFilter">仅成功</view>
+    </view>
+
+    <view class="hintline">进入本页后再离开，红点会自动清除；点任意一条通知可查看完整内容（长文不会再被截断）。</view>
+  </view>
+
+  <view wx:if="{{err}}" class="errbox">{{err}}</view>
+
+  <view wx:if="{{loading}}" class="card">
+    <view class="skeleton" style="width: 100%; height: 140rpx; margin-bottom: 20rpx"></view>
+    <view class="skeleton" style="width: 100%; height: 140rpx"></view>
+  </view>
+
+  <block wx:else>
+    <view wx:if="{{!visible.length}}" class="card">
+      <view class="empty">{{filter === 'new' ? '没有未读通知' : '没有通知'}}</view>
+    </view>
+
+    <view
+      wx:for="{{visible}}"
+      wx:key="idx"
+      class="card ncard card--tap {{item.isNew ? 'ncard--new' : ''}}"
+      data-i="{{index}}"
+      bindtap="openDetail"
+    >
+      <view class="ncard__head">
+        <view class="ncard__l">
+          <text wx:if="{{item.isNew}}" class="dot"></text>
+          <text class="ncard__title">{{item.title}}</text>
+        </view>
+        <text class="badge {{item.cls}}">{{item.label}}</text>
+      </view>
+      <view class="ncard__msg" user-select="{{true}}">{{item.msg}}</view>
+      <view class="ncard__foot">
+        <text class="small muted">{{item.fullTime}} · {{item.timeText}}</text>
+        <text wx:if="{{item.account}}" class="small muted mono">账号 {{item.account}}</text>
+        <text class="small ncard__more">点击查看全文 ›</text>
+      </view>
+    </view>
+  </block>
+
+  <!-- [20261008] 通知详情浮层：完整正文（可滚动）+ 复制全文 -->
+  <view wx:if="{{detail}}" class="ndmask" bindtap="closeDetail">
+    <view class="ndbox" catchtap="noop">
+      <view class="ndbox__head">
+        <view class="ndbox__h">
+          <text class="ndbox__title">{{detail.title}}</text>
+          <text class="ndbox__time">{{detail.fullTime}} · {{detail.label}}<block wx:if="{{detail.account}}"> · 账号 {{detail.account}}</block></text>
+        </view>
+        <text class="ndbox__x" bindtap="closeDetail">✕</text>
+      </view>
+      <scroll-view class="ndbox__body" scroll-y>
+        <text class="ndbox__text" user-select="{{true}}">{{detail.msg || '（无内容）'}}</text>
+      </scroll-view>
+      <view class="ndbox__foot">
+        <text class="ndbox__btn" bindtap="copyDetail">复制全文</text>
+        <text class="ndbox__btn ndbox__btn--p" bindtap="closeDetail">关闭</text>
+      </view>
+    </view>
+  </view>
+</view>

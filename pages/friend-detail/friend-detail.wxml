@@ -1,0 +1,75 @@
+<view class="page stagger">
+  <view wx:if="{{loading}}" class="card">
+    <view class="skeleton" style="width: 100%; height: 300rpx"></view>
+  </view>
+
+  <view wx:elif="{{err}}" class="card">
+    <view class="empty">{{err}}</view>
+  </view>
+
+  <block wx:else>
+    <!-- 头部 -->
+    <view class="card hero">
+      <image wx:if="{{friend.__avatar}}" class="avatar hero__av" src="{{friend.__avatar}}" mode="aspectFill" />
+      <view wx:else class="avatar hero__av hero__ph">{{friend.initial}}</view>
+      <view class="hero__name">{{friend.name}}</view>
+      <view class="hero__id mono">{{friend.douyinId}}</view>
+      <view class="hero__spark">
+        <text class="hero__days">{{friend.days}}</text>
+        <text class="hero__unit">天火花</text>
+      </view>
+      <view class="hero__badges">
+        <text class="badge {{friend.levelCls}}">{{friend.levelText}}</text>
+        <text wx:if="{{friend.todaySent}}" class="badge badge--primary">今日已发</text>
+        <text wx:else class="badge">今日未发</text>
+        <text wx:if="{{!friend.fresh}}" class="badge badge--warn">{{friend.freshText}}</text>
+      </view>
+    </view>
+
+    <!-- 信息 -->
+    <view class="card">
+      <view class="row">
+        <text class="row__k">备注名</text>
+        <text class="row__v">{{friend.remark || '—'}}</text>
+      </view>
+      <view class="row">
+        <text class="row__k">所属账号</text>
+        <text class="row__v mono">{{friend.accounts || '—'}}</text>
+      </view>
+      <view class="row">
+        <text class="row__k">加入名单</text>
+        <text class="row__v">{{friend.addedAt || '—'}}</text>
+      </view>
+      <view class="row">
+        <text class="row__k">火花数据</text>
+        <text class="row__v">{{friend.freshText}}（{{friend.cacheText}}）</text>
+      </view>
+      <view class="row">
+        <text class="row__k">最近消息</text>
+        <text class="row__v">{{friend.lastTime || '—'}}</text>
+      </view>
+      <view wx:if="{{friend.lastContent}}" class="lastmsg">
+        <text class="small muted">最后一条</text>
+        <view class="lastmsg__c">{{friend.lastContent}}</view>
+      </view>
+    </view>
+
+    <!-- 操作 -->
+    <view class="card">
+      <button
+        class="btn btn--primary btn--block"
+        bindtap="runNow"
+        loading="{{busy === 'run'}}"
+      >
+        立即单独续一次
+      </button>
+      <view class="ops">
+        <button class="btn" bindtap="editRemark" loading="{{busy === 'remark'}}">改备注</button>
+        <button class="btn" bindtap="copyId">复制抖音号</button>
+      </view>
+      <button class="btn btn--danger btn--block delbtn" bindtap="remove" loading="{{busy === 'del'}}">
+        移出续火花名单
+      </button>
+    </view>
+  </block>
+</view>

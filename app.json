@@ -1,0 +1,72 @@
+{
+  "pages": [
+    "pages/overview/overview",
+    "pages/spark/spark",
+    "pages/records/records",
+    "pages/tasks/tasks",
+    "pages/me/me",
+    "pages/login/login",
+    "pages/daily/daily",
+    "pages/contacts/contacts",
+    "pages/accounts/accounts",
+    "pages/qr-login/qr-login",
+    "pages/head-login/head-login",
+    "pages/push/push",
+    "pages/notifications/notifications",
+    "pages/panel-users/panel-users",
+    "pages/sys-status/sys-status",
+    "pages/friend-detail/friend-detail",
+    "pages/task-form/task-form"
+  ],
+  "window": {
+    "backgroundTextStyle": "light",
+    "navigationBarBackgroundColor": "#151b26",
+    "navigationBarTitleText": "火花面板",
+    "navigationBarTextStyle": "white",
+    "backgroundColor": "#0e131d",
+    "backgroundColorTop": "#0e131d",
+    "backgroundColorBottom": "#0e131d",
+    "enablePullDownRefresh": false
+  },
+  "tabBar": {
+    "color": "#8b95a7",
+    "selectedColor": "#ff7a45",
+    "backgroundColor": "#151b26",
+    "borderStyle": "black",
+    "list": [
+      {
+        "pagePath": "pages/overview/overview",
+        "text": "概览",
+        "iconPath": "images/tab/overview.png",
+        "selectedIconPath": "images/tab/overview-on.png"
+      },
+      {
+        "pagePath": "pages/spark/spark",
+        "text": "火花",
+        "iconPath": "images/tab/spark.png",
+        "selectedIconPath": "images/tab/spark-on.png"
+      },
+      {
+        "pagePath": "pages/records/records",
+        "text": "记录",
+        "iconPath": "images/tab/records.png",
+        "selectedIconPath": "images/tab/records-on.png"
+      },
+      {
+        "pagePath": "pages/tasks/tasks",
+        "text": "任务",
+        "iconPath": "images/tab/tasks.png",
+        "selectedIconPath": "images/tab/tasks-on.png"
+      },
+      {
+        "pagePath": "pages/me/me",
+        "text": "我的",
+        "iconPath": "images/tab/me.png",
+        "selectedIconPath": "images/tab/me-on.png"
+      }
+    ]
+  },
+  "style": "v2",
+  "sitemapLocation": "sitemap.json",
+  "lazyCodeLoading": "requiredComponents"
+}

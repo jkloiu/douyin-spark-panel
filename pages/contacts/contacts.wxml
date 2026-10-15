@@ -1,0 +1,130 @@
+<view class="page page--tab stagger">
+  <view class="accbar tap" bindtap="onSwitchAccount">
+    <view class="accbar__av">
+      <text>{{accInitial}}</text>
+      <image wx:if="{{accAvatar}}" class="accbar__avimg" src="{{accAvatar}}" mode="aspectFill" />
+    </view>
+    <view class="accbar__mid">
+      <view class="accbar__name">{{accName || '未选择账号'}}</view>
+      <view class="accbar__sub">
+        <text wx:if="{{savedAt}}">上次抓取 {{savedAt}}</text>
+        <text wx:else>还没有抓取过</text>
+      </view>
+    </view>
+    <view class="accbar__btn">切换</view>
+  </view>
+
+  <!-- 抓取入口 -->
+  <view class="card">
+    <view class="card__head">
+      <text class="card__title">抓取联系人</text>
+      <text class="card__sub">读取抖音会话列表</text>
+    </view>
+    <view class="hintbox">
+      抓的是账号的<text class="strong">抖音聊天列表</text>，不等于好友。里面有互关聊过的人，也可能有从没聊过的空会话。
+    </view>
+    <button
+      class="btn btn--primary btn--block"
+      bindtap="scrape"
+      loading="{{scraping}}"
+      disabled="{{scraping}}"
+    >
+      {{scraping ? (scrapeMsg || '抓取中…') : '开始抓取'}}
+    </button>
+  </view>
+
+  <view wx:if="{{err}}" class="errbox">{{err}}</view>
+
+  <!-- 非互关开关 -->
+  <view wx:if="{{nonMutual}}" class="card switchcard">
+    <view class="switchcard__mid">
+      <view class="switchcard__t">显示非互关空会话</view>
+      <view class="switchcard__s">有 {{nonMutual}} 个会话只有系统提示，续不了火花</view>
+    </view>
+    <switch checked="{{showNonMutual}}" bindchange="toggleNonMutual" color="#ff7a45" />
+  </view>
+
+  <view wx:if="{{loading}}" class="card">
+    <view class="skeleton" style="width: 100%; height: 120rpx; margin-bottom: 20rpx"></view>
+    <view class="skeleton" style="width: 100%; height: 120rpx"></view>
+  </view>
+
+  <block wx:else>
+    <view wx:if="{{!visible.length}}" class="card">
+      <view class="empty">这里是空的，先点上面的「开始抓取」</view>
+    </view>
+
+    <view
+      wx:for="{{visible}}"
+      wx:key="short_id"
+      class="card ccard card--tap {{item.nonMutual ? 'ccard--nm' : ''}}"
+      data-sid="{{item.short_id}}"
+      bindtap="openDetail"
+    >
+      <view class="ccard__top">
+        <image wx:if="{{item.__avatar}}" class="avatar" src="{{item.__avatar}}" mode="aspectFill" />
+        <view wx:else class="avatar ccard__ph">{{item.initial}}</view>
+        <view class="ccard__mid">
+          <view class="ccard__name">
+            {{item.name}}
+            <text wx:if="{{item.nonMutual}}" class="badge">非互关·从未聊过</text>
+          </view>
+          <view class="ccard__id mono">{{item.douyin_id}}</view>
+        </view>
+        <text wx:if="{{item.added}}" class="badge badge--ok">已添加</text>
+        <text wx:else class="badge badge--primary">可添加</text>
+      </view>
+      <view class="ccard__pv">
+        最后一条：{{item.preview || '（无内容）'}}
+        <text wx:if="{{item.lastTime}}"> · {{item.lastTime}}</text>
+      </view>
+    </view>
+  </block>
+</view>
+
+<!-- 详情弹窗 -->
+<view wx:if="{{detail}}" class="mask" bindtap="closeDetail">
+  <view class="sheet anim--up" catchtap="noop">
+    <view class="sheet__head">
+      <image wx:if="{{detail.__avatar}}" class="avatar sheet__av" src="{{detail.__avatar}}" mode="aspectFill" />
+      <view wx:else class="avatar sheet__av sheet__ph">{{detail.initial}}</view>
+      <view class="sheet__mid">
+        <view class="sheet__name">{{detail.name}}</view>
+        <view class="sheet__id mono">抖音号 {{detail.douyin_id}}</view>
+      </view>
+    </view>
+
+    <view class="sheet__badges">
+      <text wx:if="{{detail.nonMutual}}" class="badge badge--warn">非互关 · 从未聊过</text>
+      <text wx:if="{{detail.added}}" class="badge badge--ok">已在续火花名单</text>
+      <text wx:else class="badge badge--primary">可加入名单</text>
+    </view>
+
+    <view class="sheet__row">
+      <text class="sheet__k">最后一条</text>
+      <text class="sheet__v">{{detail.preview || '（无内容）'}}</text>
+    </view>
+    <view class="sheet__row">
+      <text class="sheet__k">时间</text>
+      <text class="sheet__v">{{detail.lastTime || '—'}}</text>
+    </view>
+    <view wx:if="{{detail.nonMutual}}" class="sheet__warn">
+      这个会话只有抖音系统提示（「对方回复或关注你之前，只能发送一条文字消息」），
+      说明双方非互关且从未聊天，加进名单也续不了火花。
+    </view>
+
+    <view class="sheet__ops">
+      <button class="btn btn--ghost" bindtap="closeDetail">关闭</button>
+      <button class="btn" bindtap="copyId">复制抖音号</button>
+      <button
+        wx:if="{{!detail.added}}"
+        class="btn btn--primary"
+        data-sid="{{detail.short_id}}"
+        bindtap="addContact"
+        disabled="{{adding === detail.short_id}}"
+      >
+        加入名单
+      </button>
+    </view>
+  </view>
+</view>

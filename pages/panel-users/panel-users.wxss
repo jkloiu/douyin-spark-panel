@@ -1,0 +1,145 @@
+.hintbox {
+  background: var(--card-2);
+  border-radius: 12rpx;
+  padding: 20rpx 22rpx;
+  font-size: 24rpx;
+  color: var(--txt2);
+  line-height: 1.6;
+  margin-bottom: 24rpx;
+}
+.errbox {
+  background: var(--danger-soft);
+  color: var(--danger);
+  font-size: 25rpx;
+  padding: 20rpx 24rpx;
+  border-radius: 12rpx;
+  margin-bottom: 24rpx;
+}
+.ucard__head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 16rpx;
+}
+/* 头像 + 名字 + 角色：整组靠左，头像固定 64rpx（[20261014] 面板用户头像，
+   来源是小程序「我的」页的微信头像授权，存在面板 data/avatars/panel/ 下） */
+.ucard__id {
+  display: flex;
+  align-items: center;
+  min-width: 0;
+}
+.ucard__av {
+  width: 64rpx;
+  height: 64rpx;
+  border-radius: 50%;
+  background: var(--card-3);
+  border: 1rpx solid var(--line2);
+  overflow: hidden;
+  flex: none;
+  margin-right: 16rpx;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+/* ⚠️ 尺寸必须写显式 rpx：<image> 用百分比宽高在部分机型渲染器里会塌成 0×0，
+   头像就「位置在、图不显示」（me 页 104rpx、好友 .avatar 88rpx 都是显式尺寸）。
+   父级 .ucard__av 是 64rpx + 1rpx 边框，内容区 62rpx，这里写 62rpx 正好填满。 */
+.ucard__avimg {
+  width: 62rpx;
+  height: 62rpx;
+  display: block;
+}
+.ucard__avtx {
+  font-size: 28rpx;
+  font-weight: 700;
+  color: var(--txt2);
+}
+.ucard__name {
+  font-size: 31rpx;
+  font-weight: 600;
+}
+.ucard__role {
+  margin-left: 14rpx;
+}
+.ucard__row {
+  display: flex;
+  justify-content: space-between;
+  padding: 12rpx 0;
+}
+.ucard__k {
+  font-size: 25rpx;
+  color: var(--txt3);
+  flex: none;
+}
+.ucard__v {
+  font-size: 25rpx;
+  text-align: right;
+  margin-left: 20rpx;
+  word-break: break-all;
+}
+.ucard__ops {
+  display: flex;
+  gap: 14rpx;
+  margin-top: 16rpx;
+}
+
+.mask {
+  position: fixed;
+  left: 0;
+  right: 0;
+  top: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.62);
+  z-index: 900;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 40rpx;
+}
+.dialog {
+  width: 100%;
+  max-height: 84vh;
+  overflow-y: auto;
+  background: var(--card);
+  border: 1rpx solid var(--line);
+  border-radius: 24rpx;
+  padding: 40rpx 32rpx 32rpx;
+}
+.dialog__title {
+  font-size: 32rpx;
+  font-weight: 700;
+  text-align: center;
+  margin-bottom: 30rpx;
+}
+.dialog__ops {
+  display: flex;
+  gap: 16rpx;
+  margin-top: 20rpx;
+}
+.dialog__ops .btn {
+  flex: 1;
+}
+
+.uidrow {
+  display: flex;
+  align-items: center;
+  border: 1rpx solid var(--line);
+  border-radius: 12rpx;
+  padding: 20rpx 22rpx;
+  margin-bottom: 14rpx;
+}
+.uidrow--on {
+  border-color: var(--primary);
+  background: var(--primary-soft);
+}
+.uidrow__c {
+  width: 40rpx;
+  font-size: 28rpx;
+  color: var(--primary);
+  font-weight: 700;
+  flex: none;
+}
+.uidrow__t {
+  font-size: 26rpx;
+  flex: 1;
+}

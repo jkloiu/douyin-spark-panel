@@ -1,0 +1,77 @@
+.hero {
+  text-align: center;
+  padding: 44rpx 28rpx 36rpx;
+}
+.hero__av {
+  width: 152rpx;
+  height: 152rpx;
+  margin: 0 auto;
+}
+.hero__ph {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--card-3);
+  color: var(--txt2);
+  font-size: 60rpx;
+  font-weight: 600;
+}
+.hero__name {
+  font-size: 38rpx;
+  font-weight: 700;
+  margin-top: 22rpx;
+}
+.hero__id {
+  font-size: 24rpx;
+  color: var(--txt3);
+  margin-top: 8rpx;
+}
+.hero__spark {
+  margin-top: 26rpx;
+  display: flex;
+  align-items: baseline;
+  justify-content: center;
+}
+.hero__days {
+  font-size: 72rpx;
+  font-weight: 800;
+  color: var(--primary);
+  line-height: 1;
+}
+.hero__unit {
+  font-size: 26rpx;
+  color: var(--txt2);
+  margin-left: 12rpx;
+}
+.hero__badges {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12rpx;
+  justify-content: center;
+  margin-top: 24rpx;
+}
+
+.lastmsg {
+  padding-top: 20rpx;
+  border-top: 1rpx solid var(--line);
+  margin-top: 4rpx;
+}
+.lastmsg__c {
+  font-size: 26rpx;
+  color: var(--txt2);
+  line-height: 1.6;
+  margin-top: 10rpx;
+  word-break: break-all;
+}
+
+.ops {
+  display: flex;
+  gap: 16rpx;
+  margin-top: 20rpx;
+}
+.ops .btn {
+  flex: 1;
+}
+.delbtn {
+  margin-top: 20rpx;
+}

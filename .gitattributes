@@ -1,0 +1,8 @@
+# 本仓库文件按字节原样入库：工作区里混有 LF/CRLF，
+# 绝不让 git 做行尾转换——否则与 C 盘自检镜像的 md5 逐文件比对会失真。
+* -text
+
+# 二进制资源
+*.png binary
+*.jpg binary
+*.jpeg binary
