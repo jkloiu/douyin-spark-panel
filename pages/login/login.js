@@ -104,7 +104,15 @@ Page({
     try {
       const r = await api.raw('login', { username: username, password: password })
       wx.setStorageSync('last_username', username)
-      await this._enter(r.session, '登录成功')
+      /* [20261017] 后端登录成功时会顺带把这个微信绑到该账号（返回 auto_bind），
+         这里如实转达：绑上了就说「以后免密进」；没绑上要说明原因
+         （最常见是「该微信已绑定到别的账号」），否则用户下次还得输密码、
+         却完全不知道为什么。 */
+      const ab = r.auto_bind
+      let tip = '登录成功'
+      if (ab && ab.bound) tip = '登录成功，已绑定微信，以后可直接进入'
+      else if (ab && ab.error) tip = '登录成功（微信未绑定：' + ab.error + '）'
+      await this._enter(r.session, tip)
     } catch (e) {
       this.setData({ err: e.message || '登录失败' })
     } finally {

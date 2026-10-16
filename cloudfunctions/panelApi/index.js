@@ -675,7 +675,31 @@ async function doLogin(openid, event) {
     expire: Date.now() + SESSION_TTL,
   }
   await saveSession(openid, info)
-  return ok({ session: publicSession(info) })
+
+  /* 「登录即自动绑定」[20261017]：登录成功顺手把这个微信绑到该账号，以后免密进。
+     与管理员 6 位绑定码**并存**（那边是「管理员指定绑给谁，用户不接触密码」，
+     这边是「用户自己用密码证明身份」），两者写同一张绑定表。
+     ⚠️ 绑定失败**绝不阻塞登录** —— 用户能进面板比「绑没绑上」重要得多。
+     ⚠️ 密码原样再传一次：面板与云函数之间没有可携带的登录态证明，只有一句
+        method + body，这是「你确实是这个账号」的唯一凭证；面板侧 bind_wx
+        已拒绝「该 openid 已属别的账号」，所以不会把绑定悄悄改到别人名下。 */
+  let autoBind = null
+  try {
+    const b = await bridgeRequest('POST', '/api/wx/auto-bind', {
+      openid: openid,
+      username: username,
+      password: password,
+      nick: String((event && event.nick) || '').slice(0, 40),
+    })
+    autoBind = (b && b.json) ? b.json : { ok: false, bound: false, error: '面板无响应' }
+  } catch (e) {
+    autoBind = { ok: false, bound: false, error: String((e && e.message) || e) }
+  }
+  if (autoBind && autoBind.bound) {
+    console.log('[autoBind] bound ' + String(openid).slice(0, 8) + '… -> ' + username)
+  }
+
+  return ok({ session: publicSession(info), auto_bind: autoBind })
 }
 
 async function doLogout(openid) {
