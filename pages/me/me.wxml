@@ -45,15 +45,9 @@
       <text class="menu__t">定时任务</text>
       <text class="menu__a">›</text>
     </view>
-    <!-- [20261017] 绑定入口已撤（账号密码登录即自动绑定），这里只保留「确认网页登录」 -->
-    <view class="menu__i tap-row" bindtap="goWxLink">
-      <text class="menu__e">💬</text>
-      <view class="menu__mid">
-        <text class="menu__t">确认网页登录</text>
-        <text class="menu__sub">电脑上点「微信登录」后，在这里输入它显示的 6 位码</text>
-      </view>
-      <text class="menu__a">›</text>
-    </view>
+    <!-- [20261017] 「确认网页登录」入口已撤：它唯一的作用是把网页端那张登录二维码
+     的 6 位码确认掉，撤掉后网页端的「微信扫码登录」也一并下线（否则点了没人能确认）。 -->
+
   </view>
 
   <view class="card menu">

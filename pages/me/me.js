@@ -222,9 +222,7 @@ Page(
     goSysStatus() {
       wx.navigateTo({ url: '/pages/sys-status/sys-status' })
     },
-    goWxLink() {
-      wx.navigateTo({ url: '/pages/wx-link/wx-link' })
-    },
+    // [20261017] goWxLink() 随「确认网页登录」入口一起撤掉（页面本身已从工程移除）
 
     /** 一致性检查：好友库与发送名单是否对得上 */
     async checkConsistency() {

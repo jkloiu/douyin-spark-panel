@@ -15,7 +15,6 @@
 
     <view class="daynav">
       <view class="daynav__i tap-s" data-dir="-1" bindtap="stepDay">‹ 更早</view>
-      <view class="daynav__i daynav__i--main tap-s" bindtap="onToday">今天（实时）</view>
       <view class="daynav__i tap-s" data-dir="1" bindtap="stepDay">更新 ›</view>
     </view>
 
@@ -71,7 +70,6 @@
     <view wx:if="{{pickDates.length}}" class="picks">
       <view class="picks__l">有数据的日期</view>
       <view class="picks__row">
-        <view class="pickchip pickchip--main tap-s" bindtap="onToday">今天（实时）</view>
         <view
           wx:for="{{pickDates}}"
           wx:key="i"
