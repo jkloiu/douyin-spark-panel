@@ -1,31 +1,15 @@
 <view class="page stagger">
-  <!-- 绑定状态 -->
+  <!-- [20261017] 绑定界面已移除：v1.9.5 起「账号密码登录成功即自动绑定」，
+       不再需要手动输入 6 位绑定码。本页现在只做一件事 = 确认网页端扫码登录。 -->
   <view class="card wxlink__status">
     <text class="wxlink__icon">💬</text>
     <view class="wxlink__mid">
-      <text class="wxlink__t">{{status.wxBound ? '这个微信已绑定' : '这个微信还没有绑定'}}</text>
-      <text wx:if="{{status.wxBound}}" class="wxlink__s">面板账号：{{status.username}} · 下次可直接免密登录</text>
-      <text wx:elif="{{status.bridgeOk === false}}" class="wxlink__s wxlink__s--warn">面板未接受桥密钥（管理员需检查 WX_BRIDGE_KEY 是否一致）</text>
-      <text wx:else class="wxlink__s">绑定后这个微信可以一键登录，不用再记密码</text>
+      <text class="wxlink__t">确认电脑上那次登录</text>
+      <text class="wxlink__s">电脑上点「微信登录」会显示 6 位登录码（5 分钟内有效），填到下面，那个浏览器就登录成你</text>
     </view>
-  </view>
-
-  <!-- 两个用途 -->
-  <view class="wxlink__seg">
-    <view class="wxlink__segi {{mode === 'bind' ? 'on' : ''}}" data-m="bind" bindtap="switchMode">绑定微信</view>
-    <view class="wxlink__segi {{mode === 'confirm' ? 'on' : ''}}" data-m="confirm" bindtap="switchMode">网页登录确认</view>
   </view>
 
   <view class="card wxlink__card">
-    <view class="wxlink__hint">
-      <block wx:if="{{mode === 'bind'}}">
-        在电脑上打开面板 →「面板用户」→ 找到你的账号 →「微信绑定」→ 生成 6 位绑定码，填到这里。
-      </block>
-      <block wx:else>
-        电脑上点「微信登录」会显示 6 位登录码（5 分钟内有效），填到这里，那个浏览器就登录成你。
-      </block>
-    </view>
-
     <view class="wxlink__code">
       <input
         class="wxlink__input"
@@ -49,7 +33,7 @@
       disabled="{{loading}}"
       bindtap="submit"
     >
-      {{loading ? '处理中…' : (mode === 'bind' ? '确认绑定' : '确认登录')}}
+      {{loading ? '处理中…' : '确认登录'}}
     </button>
   </view>
 

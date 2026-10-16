@@ -30,9 +30,6 @@ Page(
       notifUnread: 0,
       version: CONFIG.VERSION,
       checking: false,
-      /** [20261016] 当前微信是否已绑到面板账号（「我的 → 微信绑定」的状态行） */
-      wxBound: false,
-      wxOwner: '',
     },
 
     onShow() {
@@ -48,17 +45,8 @@ Page(
       })
       this.loadNotif()
       this.loadAvatar()
-      this.loadWxStatus()
-    },
-
-    /** 微信绑定状态：绑过才显示「已绑定：xxx」；桥/面板异常时安静降级成未绑定 */
-    async loadWxStatus() {
-      try {
-        const r = await api.raw('wxStatus')
-        this.setData({ wxBound: !!r.wxBound, wxOwner: r.username || '' })
-      } catch (e) {
-        this.setData({ wxBound: false, wxOwner: '' })
-      }
+      // [20261017] 不再调 loadWxStatus()：绑定界面撤掉后，它的两个字段
+      // （wxBound / wxOwner）在 wxml 里已无任何展示位置，白白发一次云函数请求。
     },
 
     /**

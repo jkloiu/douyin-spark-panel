@@ -22,22 +22,9 @@ Page({
     const saved = wx.getStorageSync('last_username')
     if (saved) this.setData({ username: saved })
     this.checkEnv()
-    this.autoWxLogin()
-  },
-
-  /** 静默试一次微信免密登录：绑过就直接进，没绑过只记状态不打扰 */
-  async autoWxLogin() {
-    try {
-      const r = await api.raw('wxLogin')
-      if (r && r.bound && r.session) {
-        this._enter(r.session, '微信免密登录')
-      } else {
-        this.setData({ wxBound: false })
-      }
-    } catch (e) {
-      // 桥没配好/面板不可用时不弹错，留着手动登录这条路
-      this.setData({ wxBound: false })
-    }
+    /* [20261017] 取消「打开就自动登录」：以前 onLoad 会静默试一次 wxLogin，绑过就直接进。
+       现在**只有用户主动点「微信一键登录」才会走免密**——「打开即登录」会让人分不清
+       眼前这个会话到底是谁的；而账号密码那条路是明摆着的，想登哪个账号自己填。 */
   },
 
   /** 登录成功后的统一落地（账号密码 / 微信两条路共用） */
@@ -63,7 +50,7 @@ Page({
       if (!r || !r.bound || !r.session) {
         this.setData({
           wxBound: false,
-          err: (r && r.message) || '这个微信还没有绑定面板账号，请先用账号密码登录后在「我的 → 微信绑定」里绑定',
+          err: (r && r.message) || '这个微信还没有绑定面板账号。请先用「账号 + 密码」登录一次，登录成功即自动绑定，之后就能一键登录了',
         })
         return
       }

@@ -53,8 +53,9 @@
       <text class="login__wxIcon">💬</text>
       <text>{{wxLoading ? '微信登录中…' : '微信一键登录'}}</text>
     </button>
-    <view wx:if="{{wxBound === false}}" class="login__wxHint">
-      这个微信还没有绑定面板账号：先用账号密码登录，再到「我的 → 微信绑定」绑定
+    <view class="login__wxHint">
+      [20261017] 点了才登录，进的是这个微信**第 1 次**绑定的那个账号（换绑要找管理员）。
+      没绑定过的话：用下面的账号密码登录一次，登录成功即自动绑定。
     </view>
   </view>
 

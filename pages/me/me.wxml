@@ -45,13 +45,12 @@
       <text class="menu__t">定时任务</text>
       <text class="menu__a">›</text>
     </view>
-    <!-- [20261016] 微信绑定 / 网页登录确认 -->
+    <!-- [20261017] 绑定入口已撤（账号密码登录即自动绑定），这里只保留「确认网页登录」 -->
     <view class="menu__i tap-row" bindtap="goWxLink">
       <text class="menu__e">💬</text>
       <view class="menu__mid">
-        <text class="menu__t">微信绑定</text>
-        <text wx:if="{{wxBound}}" class="menu__sub">已绑定：{{wxOwner || '这个微信'}} · 可免密登录</text>
-        <text wx:else class="menu__sub">绑定后可一键登录 · 也能确认网页扫码登录</text>
+        <text class="menu__t">确认网页登录</text>
+        <text class="menu__sub">电脑上点「微信登录」后，在这里输入它显示的 6 位码</text>
       </view>
       <text class="menu__a">›</text>
     </view>
