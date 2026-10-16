@@ -41,6 +41,21 @@
     >
       {{loading ? '登录中…' : '登录'}}
     </button>
+
+    <!-- [20261016] 微信一键登录：openid 已在面板侧绑定时，连密码都不用输 -->
+    <view class="login__or"><text>或</text></view>
+    <button
+      class="btn btn--ghost btn--block login__wx"
+      loading="{{wxLoading}}"
+      disabled="{{wxLoading || loading}}"
+      bindtap="wxLogin"
+    >
+      <text class="login__wxIcon">💬</text>
+      <text>{{wxLoading ? '微信登录中…' : '微信一键登录'}}</text>
+    </button>
+    <view wx:if="{{wxBound === false}}" class="login__wxHint">
+      这个微信还没有绑定面板账号：先用账号密码登录，再到「我的 → 微信绑定」绑定
+    </view>
   </view>
 
   <view class="login__foot">

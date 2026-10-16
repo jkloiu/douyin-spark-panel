@@ -476,6 +476,8 @@ function request(method, path, opts) {
       headers['Content-Length'] = payload.length
     }
     if (opts.token) headers['X-Panel-Token'] = opts.token
+    // [20261016] 允许调用方追加请求头（微信登录桥要用 X-WX-Bridge）
+    if (opts.headers) Object.assign(headers, opts.headers)
 
     const isHttps = u.protocol === 'https:'
     const reqOpts = {
@@ -687,6 +689,125 @@ async function doLogout(openid) {
   }
   await dropSession(openid)
   return ok({ loggedOut: true })
+}
+
+// ══════════════════════════════════════════════════════════════════
+// 微信登录桥 [20261016]
+//   面板账号 ←绑定→ 微信 openid。openid 只有本函数看得见（getWXContext），
+//   面板看不见；两边靠 BRIDGE_KEY 这条**共享密钥**对接，
+//   密钥只存在云函数环境变量与面板 .env 里，任何时候都不返回给小程序客户端。
+//   面板侧对应实现：panel/wx_bridge.py + app.py 的 /api/wx/*。
+// ══════════════════════════════════════════════════════════════════
+const BRIDGE_KEY = process.env.PANEL_BRIDGE_KEY || 'ad052ae84879ce958f2e9611fccef8eb08852fbba35a5602'
+
+function bridgeRequest(method, path, body) {
+  return request(method, path, {
+    body: body,
+    headers: { 'X-WX-Bridge': BRIDGE_KEY },
+    timeout: 15000,
+  })
+}
+
+/** 桥调用失败时的统一话术（密钥不一致是最常见的部署事故，单独给提示） */
+function bridgeErr(r) {
+  if (r && r.status === 401) {
+    return err('BRIDGE_DENIED', '面板未接受桥密钥：请确认面板 .env 的 WX_BRIDGE_KEY 与云函数环境变量 PANEL_BRIDGE_KEY 一致')
+  }
+  const m = (r && r.json && (r.json.error || r.json.message)) || ('面板返回 HTTP ' + ((r && r.status) || '?'))
+  return err('PANEL_ERR', m)
+}
+
+/** 把面板返回的会话写进 panel_sessions（与 doLogin 同一结构，后续 call 共用一条路） */
+async function adoptSession(openid, j) {
+  const info = {
+    username: j.username,
+    panelToken: j.token,
+    isAdmin: !!j.is_admin,
+    accountUids: j.account_uids || [],
+    noAccount: !!j.no_account,
+    wxBound: true,
+    expire: Date.now() + SESSION_TTL,
+  }
+  await saveSession(openid, info)
+  return info
+}
+
+/** 微信免密登录：openid 已在面板侧绑定 → 直接换取会话并落库 */
+async function doWxLogin(openid) {
+  const r = await bridgeRequest('POST', '/api/wx/login', { openid: openid })
+  if (!r.json) return bridgeErr(r)
+  if (r.status === 401) return bridgeErr(r)
+  if (!r.json.bound) {
+    return ok({ bound: false, message: r.json.error || '这个微信还没有绑定面板账号' })
+  }
+  const info = await adoptSession(openid, r.json)
+  return ok({ bound: true, session: publicSession(info) })
+}
+
+/** 用面板生成的 6 位绑定码把当前微信绑到某个面板账号；成功后直接登录 */
+async function doWxBind(openid, ev) {
+  const m = String((ev && ev.code) || '').match(/(\d{6})/)
+  if (!m) return err('BAD_PARAM', '请输入面板上显示的 6 位绑定码')
+  const r = await bridgeRequest('POST', '/api/wx/bind', {
+    openid: openid,
+    code: m[1],
+    nick: String((ev && ev.nick) || '').slice(0, 40),
+  })
+  if (!r.json) return bridgeErr(r)
+  if (r.status === 401) return bridgeErr(r)
+  if (r.json.ok !== true || !r.json.token) {
+    return err('BIND_FAIL', r.json.error || '绑定失败，请重新生成绑定码')
+  }
+  const info = await adoptSession(openid, r.json)
+  return ok({ bound: true, username: r.json.username, session: publicSession(info) })
+}
+
+/** 网页扫码登录确认：小程序把「登录码 / ticket」交给面板核销 */
+async function doWxQrConfirm(openid, ev) {
+  const code = String((ev && ev.code) || '').trim()
+  const ticket = String((ev && ev.ticket) || '').trim()
+  if (!code && !ticket) return err('BAD_PARAM', '请输入网页上显示的 6 位登录码')
+  const r = await bridgeRequest('POST', '/api/wx/qr/confirm', {
+    openid: openid,
+    code: code,
+    ticket: ticket,
+  })
+  if (r.status === 401) return bridgeErr(r)
+  if (r.json && r.json.ok === true) {
+    return ok({ status: 'ok', username: r.json.username || '' })
+  }
+  const st = (r.json && r.json.status) || ''
+  return err(st === 'unbound' ? 'WX_UNBOUND' : 'QR_FAIL',
+    (r.json && r.json.error) || '确认失败，请刷新网页上的码后重试')
+}
+
+/** 面板侧绑定情况（小程序「我的」页显示用；不依赖本地会话） */
+async function doWxStatus(openid) {
+  const sess = await getSession(openid)
+  let panel = null
+  try {
+    const r = await bridgeRequest('POST', '/api/wx/login', { openid: openid })
+    panel = {
+      bound: !!(r.json && r.json.bound),
+      bridgeOk: !(r.status === 401),
+      username: (r.json && r.json.username) || '',
+    }
+  } catch (e) {
+    panel = { bound: false, bridgeOk: false, username: '' }
+  }
+  return ok({
+    wxBound: !!panel.bound,
+    bridgeOk: !!panel.bridgeOk,
+    username: panel.username,
+    hasSession: !!(sess && sess.panelToken),
+    session: sess && sess.panelToken ? publicSession(sess) : null,
+  })
+}
+
+/** 撤销本地会话（微信侧不用退出，重进即免密恢复；用于「换账号」） */
+async function doWxUnlinkLocal(openid) {
+  await dropSession(openid)
+  return ok({ unlinked: true })
 }
 
 /**
@@ -1193,6 +1314,17 @@ exports.main = async (event, context) => {
         })
       case 'login':
         return await doLogin(openid, ev)
+      // ── 微信登录（免密 / 绑定 / 网页扫码确认）──
+      case 'wxLogin':
+        return await doWxLogin(openid)
+      case 'wxBind':
+        return await doWxBind(openid, ev)
+      case 'wxQrConfirm':
+        return await doWxQrConfirm(openid, ev)
+      case 'wxStatus':
+        return await doWxStatus(openid)
+      case 'wxUnlinkLocal':
+        return await doWxUnlinkLocal(openid)
       case 'logout':
         return await doLogout(openid)
       case 'profile':

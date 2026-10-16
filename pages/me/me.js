@@ -30,6 +30,9 @@ Page(
       notifUnread: 0,
       version: CONFIG.VERSION,
       checking: false,
+      /** [20261016] 当前微信是否已绑到面板账号（「我的 → 微信绑定」的状态行） */
+      wxBound: false,
+      wxOwner: '',
     },
 
     onShow() {
@@ -45,6 +48,17 @@ Page(
       })
       this.loadNotif()
       this.loadAvatar()
+      this.loadWxStatus()
+    },
+
+    /** 微信绑定状态：绑过才显示「已绑定：xxx」；桥/面板异常时安静降级成未绑定 */
+    async loadWxStatus() {
+      try {
+        const r = await api.raw('wxStatus')
+        this.setData({ wxBound: !!r.wxBound, wxOwner: r.username || '' })
+      } catch (e) {
+        this.setData({ wxBound: false, wxOwner: '' })
+      }
     },
 
     /**
@@ -219,6 +233,9 @@ Page(
     },
     goSysStatus() {
       wx.navigateTo({ url: '/pages/sys-status/sys-status' })
+    },
+    goWxLink() {
+      wx.navigateTo({ url: '/pages/wx-link/wx-link' })
     },
 
     /** 一致性检查：好友库与发送名单是否对得上 */

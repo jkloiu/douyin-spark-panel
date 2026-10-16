@@ -55,6 +55,38 @@
   color: var(--warn);
 }
 
+/* [20261016] 微信一键登录 */
+.login__or {
+  display: flex;
+  align-items: center;
+  gap: 18rpx;
+  margin: 26rpx 0 22rpx;
+  color: var(--txt3);
+  font-size: 23rpx;
+}
+.login__or::before,
+.login__or::after {
+  content: '';
+  flex: 1;
+  height: 1rpx;
+  background: var(--line);
+}
+.login__wx {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10rpx;
+}
+.login__wxIcon {
+  font-size: 32rpx;
+}
+.login__wxHint {
+  margin-top: 20rpx;
+  font-size: 23rpx;
+  line-height: 1.6;
+  color: var(--txt3);
+}
+
 .ph {
   color: var(--txt3);
 }

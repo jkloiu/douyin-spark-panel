@@ -6,6 +6,8 @@ Page({
     username: '',
     password: '',
     loading: false,
+    wxLoading: false,
+    wxBound: null,   // null=未知 / true=已绑定 / false=这个微信还没绑定
     err: '',
     envOk: null,
     envMsg: '',
@@ -20,6 +22,58 @@ Page({
     const saved = wx.getStorageSync('last_username')
     if (saved) this.setData({ username: saved })
     this.checkEnv()
+    this.autoWxLogin()
+  },
+
+  /** 静默试一次微信免密登录：绑过就直接进，没绑过只记状态不打扰 */
+  async autoWxLogin() {
+    try {
+      const r = await api.raw('wxLogin')
+      if (r && r.bound && r.session) {
+        this._enter(r.session, '微信免密登录')
+      } else {
+        this.setData({ wxBound: false })
+      }
+    } catch (e) {
+      // 桥没配好/面板不可用时不弹错，留着手动登录这条路
+      this.setData({ wxBound: false })
+    }
+  },
+
+  /** 登录成功后的统一落地（账号密码 / 微信两条路共用） */
+  async _enter(session, tip) {
+    const app = getApp()
+    app.globalData.loggedIn = true
+    app.globalData.session = session
+    if (session && session.username) wx.setStorageSync('last_username', session.username)
+    await app.loadAccounts({ live: false })
+    app.pickDefaultAccount()
+    ui.ok(tip || '登录成功')
+    setTimeout(function () {
+      wx.reLaunch({ url: '/pages/overview/overview' })
+    }, 350)
+    // 账号登录态真校验放后台跑，别卡住跳转
+    app.refreshAccountStatus()
+  },
+
+  async wxLogin() {
+    this.setData({ wxLoading: true, err: '' })
+    try {
+      const r = await api.raw('wxLogin')
+      if (!r || !r.bound || !r.session) {
+        this.setData({
+          wxBound: false,
+          err: (r && r.message) || '这个微信还没有绑定面板账号，请先用账号密码登录后在「我的 → 微信绑定」里绑定',
+        })
+        return
+      }
+      this.setData({ wxBound: true })
+      await this._enter(r.session, '微信登录成功')
+    } catch (e) {
+      this.setData({ err: e.message || '微信登录失败' })
+    } finally {
+      this.setData({ wxLoading: false })
+    }
   },
 
   onUser(e) {
@@ -49,18 +103,8 @@ Page({
     this.setData({ loading: true, err: '' })
     try {
       const r = await api.raw('login', { username: username, password: password })
-      const app = getApp()
-      app.globalData.loggedIn = true
-      app.globalData.session = r.session
       wx.setStorageSync('last_username', username)
-      await app.loadAccounts({ live: false })
-      app.pickDefaultAccount()
-      ui.ok('登录成功')
-      setTimeout(function () {
-        wx.reLaunch({ url: '/pages/overview/overview' })
-      }, 350)
-      // 账号登录态真校验放后台跑，别卡住跳转
-      app.refreshAccountStatus()
+      await this._enter(r.session, '登录成功')
     } catch (e) {
       this.setData({ err: e.message || '登录失败' })
     } finally {

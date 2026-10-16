@@ -15,6 +15,7 @@
     "pages/notifications/notifications",
     "pages/panel-users/panel-users",
     "pages/sys-status/sys-status",
+    "pages/wx-link/wx-link",
     "pages/friend-detail/friend-detail",
     "pages/task-form/task-form"
   ],
