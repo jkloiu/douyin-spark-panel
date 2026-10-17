@@ -99,14 +99,10 @@
     </view>
   </view>
 
-  <!-- crontab：仅管理员可见（口径与面板一致） -->
-  <view wx:if="{{isAdmin && crontab}}" class="card">
-    <view class="card__head">
-      <text class="card__title">系统 crontab</text>
-      <text class="card__sub">管理员可见</text>
-    </view>
-    <view class="cron">{{crontab}}</view>
-  </view>
+  <!-- [20261017] crontab 原文展示已按用户要求从所有界面删除（口径与网页面板一致：
+       任务页「当前 crontab」+ 网页系统状态页 + 本页原来那块）。
+       注意别以为丢了「下次执行」信息 —— 上面那几个时间都来自接口的 next/run 字段，
+       与 crontab 原文无关。 -->
 
   <view class="footnote">
     <text wx:if="{{updatedAt}}">更新于 {{updatedAt}}　</text>下拉可刷新

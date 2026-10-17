@@ -47,7 +47,8 @@ Page(
       running: [],
       anyRunning: false,
       next: null,
-      crontab: '',
+      /* [20261017] crontab 原文展示已删，下面 setData 里对应那行也一并去掉，
+         避免留下一个 data 里没声明、只有 setData 会写入的悬空字段。 */
       isAdmin: false,
       busy: '',
       updatedAt: '',
@@ -109,7 +110,6 @@ Page(
           running: running,
           anyRunning: !!(rmain.running || rcustom.running),
           next: d.next || null,
-          crontab: d.crontab || '',
           updatedAt: d.now || '',
         })
       } catch (e) {

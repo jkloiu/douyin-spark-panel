@@ -89,15 +89,8 @@
   color: var(--txt3);
 }
 
-/* crontab 原文：等宽 + 可横向滚不动，只能换行 */
-.cron {
-  font-family: 'SF Mono', Menlo, Consolas, monospace;
-  font-size: 22rpx;
-  color: var(--txt2);
-  line-height: 1.8;
-  word-break: break-all;
-  white-space: pre-wrap;
-}
+/* [20261017] 原 .cron 样式（等宽 + pre-wrap，给 crontab 原文用）已随那块展示删除，
+   wxml 里已无任何引用。 */
 
 .footnote {
   font-size: 22rpx;
